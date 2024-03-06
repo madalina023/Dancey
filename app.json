@@ -3,6 +3,7 @@
     "name": "home-service-app",
     "slug": "home-service-app",
     "version": "1.0.0",
+    "scheme": "dancey",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -25,6 +26,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font",
+      "expo-secure-store"
+    ]
   }
 }
