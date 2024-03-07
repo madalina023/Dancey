@@ -30,7 +30,7 @@ export default function TrainersModel({ trainerID, hideModal }) {
   }, []);
 
   const getTime = () => {
-    const newTimeList = []; // Create a new array to populate
+    const newTimeList = []; 
 
     for (let i = 8; i <= 12; i++) {
       newTimeList.push({ time: i + ":00 AM" });

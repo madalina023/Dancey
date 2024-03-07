@@ -16,8 +16,6 @@ export default function TrainersByStyleScreen() {
 
   const getTrainersByStyle = () => {
     GlobalAPI.getTrainersListByStyle(parameters.danceStyles).then((resp) => {
-    
-
       setTrainerList(resp.trainers);
     });
   };

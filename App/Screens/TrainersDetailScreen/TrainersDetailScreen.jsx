@@ -57,7 +57,7 @@ export default function TrainersDetailScreen() {
     <View style={{ flex: 1 }}>
       <FlatList
         ListHeaderComponent={renderHeader}
-        data={[]} // Assuming you don't have a list to display, pass an empty array
+        data={[]} 
         keyExtractor={(item, index) => index.toString()}
       />
       <View style={{ flexDirection: 'row', margin: 5, padding:5, gap: 8, justifyContent: 'space-around' }}>

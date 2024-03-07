@@ -113,11 +113,44 @@ const createBooking=async(data ) =>{
 const result = await request(MASTER_URL, mutationQuery);
 return result;}
 
+const getUserBookings=async(userEmail) =>{
+  const query = gql`
+    query GetUserBookings {
+      bookings(orderBy: updatedAt_DESC, where: {userEmail: "`+userEmail+`"}) {
+        time
+        userEmail
+        userName
+        bookingStatus
+        date
+        id
+        trainer {
+          about
+          contact
+          id
+          danceStyles {
+            name
+          }
+          images {
+            url
+          }
+          name
+          experience
+        }
+      }
+    }
+  `  
+  const result = await request(MASTER_URL, query); 
+
+  return result;
+}
+
+
 export default{
     getSlider,
     getCategories,
     getDanceStyle, 
     getTrainers,
     getTrainersListByStyle,
-    createBooking
+    createBooking,
+    getUserBookings
 }

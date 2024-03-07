@@ -13,13 +13,11 @@ export default function Trainers() {
 
     const getTrainers = () => {
         GlobalAPI.getTrainers().then(resp => {
-            console.log(resp);
-            if(resp && resp.trainers) { // Check if resp and resp.trainers are not undefined
+            if(resp && resp.trainers) { 
                 setTrainers(resp.trainers);
             } else {
-                // Handle the case where resp or resp.trainers is undefined
                 console.error('Invalid response from getTrainers:', resp);
-                setTrainers([]); // Set to empty array as a fallback
+                setTrainers([]); 
             }
         });
     };

@@ -4,7 +4,7 @@ import Colors from '../../Utils/Colors';
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/core';
  import { Entypo } from '@expo/vector-icons';
-export default function TrainerListItem({ trainer }) {
+export default function TrainerListItem({ trainer, booking }) {
     const navigation=useNavigation();
     return (
         <View style={styles.container}>
@@ -22,10 +22,15 @@ export default function TrainerListItem({ trainer }) {
                      <Text style={styles.contact}>
                      <Entypo name="phone" size={24} color={Colors.PRIMARY} />
                      {trainer.contact}</Text>
-
+                  
+                     {booking?.id? <Text style={{
+                        marginTop:10, 
+                        fontFamily:'Lato-Regular', 
+                        color:Colors.PRIMARY, 
+                        elevation:10}}>Show booking</Text>:null}
                 </View>
                 <AntDesign name="right" size={24}   color={Colors.PRIMARY_DARK} />
-               
+            
             </TouchableOpacity>
            
         </View>
