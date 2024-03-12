@@ -144,7 +144,24 @@ const getUserBookings=async(userEmail) =>{
   return result;
 }
 
+const cancelBooking = async (bookingId) => {
+  const DELETE_BOOKING = gql`
+    mutation DeleteBooking($id: ID!) {
+      deleteBooking(where: { id: $id }) {
+        id
+      }
+    }
+  `;
 
+  try {
+    const variables = { id: bookingId };
+    await request(MASTER_URL, DELETE_BOOKING, variables);
+    alert("Booking canceled successfully!");
+    // Optionally: Update local state or trigger a refetch of bookings
+  } catch (error) {
+    console.error("Error canceling booking", error);
+    alert("Failed to cancel booking.");
+  }};
 export default{
     getSlider,
     getCategories,
@@ -152,5 +169,6 @@ export default{
     getTrainers,
     getTrainersListByStyle,
     createBooking,
-    getUserBookings
+    getUserBookings,
+    cancelBooking
 }

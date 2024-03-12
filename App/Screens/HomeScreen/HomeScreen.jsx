@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet ,TextInput} from 'react-native';
 import Header from './Header';
 import Slider from './Slider';
 import Categories from './Categories';
 import Styles from './Styles';
 import Trainers from './Trainers';
+import React  from 'react';
 
 const ListHeader = () => (
   <View>
@@ -19,6 +19,7 @@ const ListHeader = () => (
 );
 
 export default function HomeScreen() {
+  
   return (
     <FlatList
       ListHeaderComponent={ListHeader}
@@ -29,28 +30,4 @@ export default function HomeScreen() {
   );
 }
 
-
-// import { View, Text, StyleSheet, ScrollView } from 'react-native'
-// import React from 'react'
-// import Header from './Header'
-// import Slider from './Slider'
-// import Colors from '../../Utils/Colors'
-// import Categories from './Categories'
-// import Styles from './Styles'
-// import Trainers from './Trainers'
-
-// export default function HomeScreen() {
-//   return (
-//     <View style={{flex:1}}>
-//       <ScrollView style={{flex:1 }}>
-//         <Header/>
-//         <View style={{padding:20}}>
-//           <Slider />
-//           <Categories/>
-//           <Styles/>
-//           <Trainers/>
-//         </View>
-//         </ScrollView>
-//     </View>
-//   )
-// }
+ 

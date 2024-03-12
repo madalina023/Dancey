@@ -7,5 +7,7 @@ export default{
     WHITE: '#FFFFFF',
     GRAY:'#808080',
     LIGHT_GRAY:'#888787',
-    PRIMARY_DARK:'#860745'
+    PRIMARY_DARK:'#860745',
+    GREEN_LIGHT:'#C8F6B6',
+    ORANGE_LIGHT:'#FFC196'
 }

@@ -4,6 +4,7 @@ import { useUser } from '@clerk/clerk-expo'
 import Colors from '../../Utils/Colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+
 export default function Header() {
     const {user,isLoading} =useUser();
   return  user&&(

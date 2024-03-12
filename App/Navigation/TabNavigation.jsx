@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../Screens/HomeScreen/HomeScreen';
 import ProfileScreen from '../Screens/ProfileScreen/ProfileScreen';
 import BookingScreen from '../Screens/BookingScreen/BookingScreen';
-import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../Utils/Colors';
@@ -19,13 +18,13 @@ const Tab = createBottomTabNavigator();
           tabBarActiveTintColor:Colors.PRIMARY
         }}>
 
-            <Tab.Screen name='home' component={HomeNavigation} 
+            <Tab.Screen name='home1' component={HomeNavigation} 
             options={{
               tabBarLabel:({color})=>(
                 <Text style={{color:color,fontSize:12,marginTop:-7}}>Home</Text>
               ),
               tabBarIcon:({color, size})=>(
-              <AntDesign name="home" size={size} color={color} />)
+                <Ionicons name="home-outline" size={size} color={color}  />)
             }}
             />
            
