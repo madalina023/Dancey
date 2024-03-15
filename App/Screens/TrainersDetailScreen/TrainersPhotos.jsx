@@ -11,7 +11,7 @@ export default function TrainersPhotos({trainer}) {
         numColumns={2}
         renderItem={({item})=>(
         <Image source={{uri:item.url}}
-            style={{width:'100%',height:120, flex:1, borderRadius:10, margin:7, objectFit:'cover'}}/>
+            style={{width:'100%',height:120, flex:1, borderRadius:10, margin:7, objectFit:'contain'}}/>
         )}/>
     </View>
   )

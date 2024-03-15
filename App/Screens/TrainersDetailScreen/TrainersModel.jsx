@@ -76,10 +76,10 @@ export default function TrainersModel({ trainerID, hideModal }) {
     <ScrollView>
     <KeyboardAvoidingView style={{ padding: 20 }}>
       <TouchableOpacity
-        style={{
+        style={{ marginTop:30,
           display: "flex",
           flexDirection: "row",
-          marginBottom: 20,
+          marginBottom: 40,
           alignItems: "center",
           gap: 10,
         }}
@@ -153,17 +153,19 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderColor: Colors.PRIMARY,
-    borderRadius: 90,
+    borderRadius: 10,
     paddingHorizontal: 15,
     color: Colors.WHITE,
     marginTop: 5,
+    overflow:'hidden',
     backgroundColor: Colors.PRIMARY,
   },
   unselectedTime: {
     padding: 10,
     borderWidth: 1,
     borderColor: Colors.PRIMARY,
-    borderRadius: 90,
+    borderRadius: 10,
+    overflow:'hidden',
     paddingHorizontal: 15,
     color: Colors.PRIMARY,
     marginTop: 5,
@@ -175,7 +177,7 @@ const styles = StyleSheet.create({
     textAlignVertical:'top',
     padding:20,
     fontSize:14,
-    fontFamily:'Lato-Regular'
+    fontFamily:'Lato-Regular', 
   },
   confirmBtn:{
     fontFamily:'Lato-Regular',
@@ -184,8 +186,9 @@ const styles = StyleSheet.create({
     color:Colors.WHITE,
     textAlign: 'center',
     padding:10,
-    borderRadius:90,
-    elevation:3 
+    borderRadius:14,
+    elevation:3 ,
+    overflow:'hidden',
   
   }
 });

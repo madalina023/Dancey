@@ -20,7 +20,7 @@ export default function ProfileScreen() {
     },
     {
       id: 2,
-      name: "My Booking",
+      name: "Bookings",
       icon: "bookmark-sharp",
     },
     {

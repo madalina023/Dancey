@@ -7,6 +7,8 @@ import TabNavigation from './App/Navigation/TabNavigation';
 import * as WebBrowser from 'expo-web-browser';
 import { useFonts } from 'expo-font';
 import Colors from './App/Utils/Colors';
+import { LogBox } from 'react-native';
+
 const tokenCache = {
   async getToken(key) {
     try {
@@ -24,6 +26,8 @@ const tokenCache = {
   },
 };
 export default function App() {
+  LogBox.ignoreLogs(['ViewPropTypes will be removed']);
+
   const [fontsLoaded, fontError] = useFonts({
     'Lato-Regular': require('./assets/fonts/Lato-Regular.ttf'),
     'Lato-Bold': require('./assets/fonts/Lato-Bold.ttf'),
@@ -52,7 +56,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    marginBottom:-10
   }, 
    safeArea: {
     flex: 1

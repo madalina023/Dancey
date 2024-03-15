@@ -32,7 +32,7 @@ export default function TrainersDetailScreen() {
       {trainer && (
         <Image
           source={{ uri: trainer.images[0]?.url }}
-          style={{ width: "100%", height: 300 }}
+          style={{ width: 400, height: 300, objectFit:'cover' }}
         />
       )}
       <View style={styles.container}>

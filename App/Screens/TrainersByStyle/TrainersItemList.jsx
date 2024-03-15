@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
-    objectFit:'fit',
+    objectFit:'cover',
     borderRadius: 10,
   },
   contact: {
