@@ -197,6 +197,25 @@ const getSubscription = async (userEmail) => {
   const result = await request(MASTER_URL, query);
   return result;
 };
+
+
+const createActiveSubscription = async (subscriptionData) => {
+  const mutation = gql`
+    mutation createActiveSubscription {
+      createActiveSubscription(
+        data: { subscriptions: { connect: { id: "${subscriptionData.subscriptionID}" } }, 
+        date: "${subscriptionData.date}", time: "${subscriptionData.time}" }
+      ) {
+        id
+      }
+      publishManyActiveSubscriptions(to:PUBLISHED){count}
+    }
+  `;
+  // Execute the mutation using your GraphQL client
+  const result = await request(MASTER_URL, mutation);
+  return result;
+};
+
 export default {
   getSlider,
   getCategories,
@@ -206,5 +225,6 @@ export default {
   createBooking,
   getUserBookings,
   cancelBooking,
-  getSubscription
+  getSubscription,
+ createActiveSubscription
 };

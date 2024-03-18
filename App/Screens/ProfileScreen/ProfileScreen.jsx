@@ -7,8 +7,7 @@ import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Linking } from "react-native";
 import { useClerk } from "@clerk/clerk-expo";
-
-export default function ProfileScreen() {
+ export default function ProfileScreen() {
   const { user, signOut } = useClerk();
   const navigation = useNavigation();
 
@@ -30,6 +29,11 @@ export default function ProfileScreen() {
     },
     {
       id: 4,
+      name: "Subscriptions",
+      icon: "bag-check",
+    },
+    {
+      id: 5,
       name: "Logout",
       icon: "log-out",
     },
@@ -48,6 +52,9 @@ export default function ProfileScreen() {
         Linking.openURL(emailUrl).catch((err) =>
           console.error("Failed to open email composer:", err)
         );
+        break;
+      case "Subscriptions":
+        navigation.navigate("subscriptions-active");
         break;
       case "Logout":
         signOut()

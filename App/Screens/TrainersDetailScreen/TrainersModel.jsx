@@ -7,7 +7,7 @@ import {
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
-  ToastAndroid,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -45,7 +45,7 @@ export default function TrainersModel({ trainerID, hideModal }) {
   };
   const createNewBooking=()=>{
     if(!selectedTime || !selectedDate){
-      ToastAndroid.show('Select date and time.', ToastAndroid.LONG);
+     Alert.alert('Select date and time.');
 
       return;
     } 
@@ -59,7 +59,7 @@ export default function TrainersModel({ trainerID, hideModal }) {
     }
     GlobalAPI.createBooking(data).then(resp => {
   
-      ToastAndroid.show('Booking created successfully.', ToastAndroid.LONG);
+      Alert.alert('Booking created successfully.');
       hideModal();
 
     }).catch(error => {

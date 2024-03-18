@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Colors from "../../Utils/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/core";
@@ -17,19 +17,25 @@ import {
   StripeProvider,
   useConfirmPayment,
 } from "@stripe/stripe-react-native";
-
+import { useUser } from "@clerk/clerk-expo";
+import moment from "moment";
+import GlobalAPI from "../../Utils/GlobalAPI";
 const API_URL = "http://192.168.1.129:3000";
 const PUBLISHABLE_KEY =
   "pk_test_51OuYOCRqRmTxzPBOLwxDwFgkoiNZdsScBfbrXtbWc5PI3IjxfWwdtjT2wEk2iQ1Q21Updvj7xwshTmGHMOnp9Ygh00W4I3bihS";
-const Payment = (props) => {
+export default function Payment({}) {
   const navigation = useNavigation();
   const route = useRoute();
-  const price = route.params.price; // Ensure this is in cents as Stripe expects
+  const price = route.params?.price; // Ensure this is in cents as Stripe expects
 
+  const subscriptionID = route.params?.subscriptionID;
+  useEffect(() => {
+    console.log("Received parameters:", route.params);
+  }, []);
   const [email, setEmail] = useState();
   const [cardDetails, setCardDetails] = useState();
   const { confirmPayment, loading } = useConfirmPayment();
-
+  const { user } = useUser();
   const fetchPaymentIntentClientSecret = async () => {
     const url = `${API_URL}/create-payment-intent`;
     console.log(`Attempting to fetch from URL: ${url}`);
@@ -39,7 +45,11 @@ const Payment = (props) => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          price: price, // Make sure this is correctly set
+        }),
       });
+
       if (!response.ok) {
         throw new Error(`HTTP status ${response.status}`);
       }
@@ -81,10 +91,39 @@ const Payment = (props) => {
       Alert.alert("Payment Error", confirmError.message);
       return;
     }
+    if (!subscriptionID) {
+      console.error("No subscription ID provided.");
+      Alert.alert("Error", "Subscription information is missing.");
+      return;
+    }
+
+    const currentDate = moment().format("YYYY-MM-DD");
+    const currentTime = moment().format("HH:mm:ss");
 
     if (paymentIntent) {
       Alert.alert("Payment Successful", "Thank you for your payment!");
       console.log("Payment successful:", paymentIntent);
+
+      // Make sure to include 'currentDate' and 'currentTime' when creating the 'subscriptionData' object
+      const subscriptionData = {
+        subscriptionID: subscriptionID, // Assuming 'subscriptionID' is the correct field name
+        date: currentDate, // Using the variable from the scope
+        time: currentTime, // Using the variable from the scope
+      };
+
+      try {
+        const result = await GlobalAPI.createActiveSubscription(
+          subscriptionData
+        );
+        console.log("Active subscription created successfully:", result);
+        navigation.navigate("payment", {
+          subscriptionID: subscriptionID,
+          price: 20000,
+        });
+      } catch (error) {
+        console.error("Error creating active subscription:", error);
+        Alert.alert("Subscription Error", "Failed to activate subscription.");
+      }
     }
   };
   return (
@@ -120,7 +159,7 @@ const Payment = (props) => {
             />
 
             <View style={styles.buttonContainer}>
-              <Text style={styles.priceText}>${(price / 100).toFixed(2)}</Text>  
+              <Text style={styles.priceText}>${(price / 100).toFixed(2)}</Text>
               <TouchableOpacity
                 onPress={handlePayPress}
                 style={styles.customButton}
@@ -134,8 +173,7 @@ const Payment = (props) => {
       </View>
     </ScrollView>
   );
-};
-export default Payment;
+}
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",

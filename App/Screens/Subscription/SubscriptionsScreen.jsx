@@ -48,6 +48,7 @@ export default function SubscriptionsScreen() {
                 onPress={() =>
                   navigation.navigate("payment", {
                     price: subscription.price * 100,
+                    subscriptionID: subscription.id, // Pass the subscriptionId to the Payment screen
                   })
                 }
               >
