@@ -23,19 +23,22 @@ import GlobalAPI from "../../Utils/GlobalAPI";
 const API_URL = "http://192.168.1.129:3000";
 const PUBLISHABLE_KEY =
   "pk_test_51OuYOCRqRmTxzPBOLwxDwFgkoiNZdsScBfbrXtbWc5PI3IjxfWwdtjT2wEk2iQ1Q21Updvj7xwshTmGHMOnp9Ygh00W4I3bihS";
+
 export default function Payment({}) {
   const navigation = useNavigation();
   const route = useRoute();
-  const price = route.params?.price; // Ensure this is in cents as Stripe expects
+  const price = route.params?.price;  
 
   const subscriptionID = route.params?.subscriptionID;
-  useEffect(() => {
-    console.log("Received parameters:", route.params);
-  }, []);
-  const [email, setEmail] = useState();
+const [email, setEmail] = useState();
   const [cardDetails, setCardDetails] = useState();
   const { confirmPayment, loading } = useConfirmPayment();
   const { user } = useUser();
+
+  useEffect(() => {
+    console.log("Received parameters:", route.params);
+  }, []);
+  
   const fetchPaymentIntentClientSecret = async () => {
     const url = `${API_URL}/create-payment-intent`;
     console.log(`Attempting to fetch from URL: ${url}`);

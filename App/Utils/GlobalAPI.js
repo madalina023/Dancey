@@ -216,6 +216,28 @@ const createActiveSubscription = async (subscriptionData) => {
   return result;
 };
 
+
+const getActiveSubscription = async () => {
+  const query = gql`
+    query ActiveSubscriptions {
+      activeSubscriptions {
+        date
+        time
+        subscriptions {
+          id
+          name
+          image {
+            url
+          }
+          price
+        }
+      }
+    }
+  `;
+  const result = await request(MASTER_URL, query);
+  return result;
+};
+
 export default {
   getSlider,
   getCategories,
@@ -226,5 +248,6 @@ export default {
   getUserBookings,
   cancelBooking,
   getSubscription,
- createActiveSubscription
+  createActiveSubscription,
+ getActiveSubscription
 };
