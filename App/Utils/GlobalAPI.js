@@ -198,17 +198,22 @@ const getSubscription = async (userEmail) => {
   return result;
 };
 
-
 const createActiveSubscription = async (subscriptionData) => {
   const mutation = gql`
     mutation createActiveSubscription {
       createActiveSubscription(
-        data: { subscriptions: { connect: { id: "${subscriptionData.subscriptionID}" } }, 
-        date: "${subscriptionData.date}", time: "${subscriptionData.time}" }
+        data: { 
+          subscriptions: { connect: { id: "${subscriptionData.subscriptionID}" } }, 
+          date: "${subscriptionData.date}", 
+          time: "${subscriptionData.time}",
+          statusSubscription: "${subscriptionData.statusSubscription}" 
+        }
       ) {
         id
       }
-      publishManyActiveSubscriptions(to:PUBLISHED){count}
+      publishManyActiveSubscriptions(to: PUBLISHED) {
+        count
+      }
     }
   `;
   // Execute the mutation using your GraphQL client
@@ -216,13 +221,13 @@ const createActiveSubscription = async (subscriptionData) => {
   return result;
 };
 
-
 const getActiveSubscription = async () => {
   const query = gql`
     query ActiveSubscriptions {
       activeSubscriptions {
         date
         time
+        statusSubscription
         subscriptions {
           id
           name
@@ -237,6 +242,94 @@ const getActiveSubscription = async () => {
   const result = await request(MASTER_URL, query);
   return result;
 };
+const updateExpiredSubscriptionsStatus = async () => {
+  const query = gql`
+    query ActiveSubscriptions {
+      activeSubscriptions {
+        id
+        date
+        statusSubscription
+      }
+    }
+  `;
+
+  try {
+    const result = await request(MASTER_URL, query);
+    return result.activeSubscriptions;
+  } catch (error) {
+    console.error("Error fetching active subscriptions", error);
+    throw new Error("Failed to fetch active subscriptions.");
+  }
+};
+const UPDATE_SUBSCRIPTION_STATUS = gql`
+  mutation UpdateSubscriptionStatus($id: ID!, $status: String!) {
+    updateActiveSubscription(
+      where: { id: $id }
+      data: { statusSubscription: $status }
+    ) {
+      id
+      statusSubscription
+    }
+  }
+`;
+
+const updateSubscriptionStatus = async (id, status) => {
+  const variables = { id, status };
+  try {
+    const result = await request(
+      MASTER_URL,
+      UPDATE_SUBSCRIPTION_STATUS,
+      variables
+    );
+    console.log(`Subscription status updated:`, result);
+  } catch (error) {
+    console.error(`Error updating subscription status:`, error);
+  }
+};
+const checkAndUpdateSubscriptionStatuses = async () => {
+  const activeSubscriptions = await updateExpiredSubscriptionsStatus();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+  await Promise.all(
+    activeSubscriptions.map(async (subscription) => {
+      const subscriptionDate = new Date(subscription.date);
+      if (subscriptionDate < oneMonthAgo) {
+        await updateSubscriptionStatus(subscription.id, "Expired");
+      }
+    })
+  );
+};
+const getCalendarEventsWithDetails = async () => {
+  const query = gql`
+    query GetCalendarEventsWithDetails {
+      calendars {
+        id
+        dayOfWeek
+        startTime
+        endTime
+        level
+        danceStyles {
+          id
+          name
+          trainers {
+            id
+            name
+            levelOnTraining
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const result = await request(MASTER_URL, query);
+    return result.calendars;
+  } catch (error) {
+    console.error("Error fetching calendar events with details", error);
+    throw new Error("Failed to fetch calendar events with details.");
+  }
+};
 
 export default {
   getSlider,
@@ -249,5 +342,9 @@ export default {
   cancelBooking,
   getSubscription,
   createActiveSubscription,
- getActiveSubscription
+  getActiveSubscription,
+  updateExpiredSubscriptionsStatus,
+  updateSubscriptionStatus,
+  checkAndUpdateSubscriptionStatuses,
+  getCalendarEventsWithDetails
 };

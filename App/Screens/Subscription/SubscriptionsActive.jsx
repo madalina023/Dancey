@@ -10,6 +10,7 @@ import {
 import Colors from "../../Utils/Colors";
 import { useNavigation } from "@react-navigation/native";
 import GlobalAPI from "../../Utils/GlobalAPI";
+import moment from "moment";
 
 const SubscriptionsActive = () => {
   const [activeSubscriptions, setActiveSubscriptions] = useState([]);
@@ -27,20 +28,20 @@ const SubscriptionsActive = () => {
       return `${expiryDate.toDateString()} at ${timeString}`;
     }
   };
-
   useEffect(() => {
     const fetchActiveSubscriptions = async () => {
       setLoading(true);
       try {
         const result = await GlobalAPI.getActiveSubscription();
-        const subscriptionsWithDateTime = result.activeSubscriptions.flatMap(
-          (as) =>
+        const subscriptionsWithDateTimeAndStatus =
+          result.activeSubscriptions.flatMap((as) =>
             as.subscriptions.map((sub) => ({
               ...sub,
               expiryDate: calculateExpiryDate(as.date, as.time),
+              status: as.statusSubscription, // Add the statusSubscription here
             }))
-        );
-        setActiveSubscriptions(subscriptionsWithDateTime);
+          );
+        setActiveSubscriptions(subscriptionsWithDateTimeAndStatus);
       } catch (error) {
         console.error("Error fetching active subscriptions:", error);
       } finally {
@@ -68,7 +69,6 @@ const SubscriptionsActive = () => {
           <Image
             source={{ uri: subscription.image.url }}
             style={styles.fullImage}
-            
           />
           <View style={styles.textArea}>
             <View style={styles.namePriceRow}>
@@ -76,17 +76,18 @@ const SubscriptionsActive = () => {
               <Text style={styles.price}>${subscription.price}</Text>
             </View>
             <Text style={styles.dateTime}>
-              {subscription.expiryDate === "Expired" ? (
-                <Text style={styles.expiredText}>
-                  {subscription.expiryDate}
-                </Text>
-              ) : (
+              {subscription.status === "Active" ? ( 
                 <Text>
                   <Text style={{ fontWeight: "bold" }}>Expires at:</Text>{" "}
                   {subscription.expiryDate}
                 </Text>
+              ) : (
+                <Text style={styles.expiredText}>
+                  {subscription.expiryDate}
+                </Text>
               )}
-            </Text>
+            </Text> 
+            
           </View>
         </View>
       ))}
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     marginBottom: 10,
-    objectFit:'fill'
+    objectFit: "fill",
   },
   textArea: {
     width: "100%",

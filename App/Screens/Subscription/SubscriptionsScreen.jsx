@@ -4,13 +4,51 @@ import Colors from '../../Utils/Colors';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import GlobalAPI from '../../Utils/GlobalAPI';
-
+import { Alert } from 'react-native';
 export default function SubscriptionsScreen() {
   const navigation = useNavigation();
   const [subscriptions, setSubscriptions] = useState([]);
+const [activeSubscriptions, setActiveSubscriptions] = useState([]);
+
+const checkSubscriptionAndNavigate = (subscription) => {
+  // Assuming each subscription has a 'statusSubscription' field that could be 'Active' or 'Expired'
+const hasActiveSubscription = activeSubscriptions.some(
+  (sub) => sub.statusSubscription === "Active"
+);
+
+  if (hasActiveSubscription) {
+    Alert.alert("You already have an active subscription.");
+  } else {
+    navigation.navigate("payment", {
+      price: subscription.price * 100,
+      subscriptionID: subscription.id,
+    });
+  }
+};
+console.log("Active subscriptions:", activeSubscriptions);
+
 
   useEffect(() => {
     getSubscription();
+     const updateStatuses = async () => {
+      try {
+        await GlobalAPI.checkAndUpdateSubscriptionStatuses();
+        console.log("Subscription statuses updated.");
+      } catch (error) {
+        console.error("Failed to update subscription statuses:", error);
+      }
+    };
+  const fetchActiveSubscriptions = async () => {
+    try {
+      const result = await GlobalAPI.getActiveSubscription();
+      setActiveSubscriptions(result.activeSubscriptions); // Adjust based on actual response structure
+    } catch (error) {
+      console.error("Failed to fetch active subscriptions:", error);
+    }
+  };
+
+  fetchActiveSubscriptions();
+    updateStatuses();
   }, []);
 
   const getSubscription = () => {
@@ -45,12 +83,7 @@ export default function SubscriptionsScreen() {
             <View style={styles.priceRow}>
               <Text style={styles.price}>${subscription.price}</Text>
               <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("payment", {
-                    price: subscription.price * 100,
-                    subscriptionID: subscription.id, // Pass the subscriptionId to the Payment screen
-                  })
-                }
+                onPress={() => checkSubscriptionAndNavigate(subscription)}
               >
                 <Text style={styles.touchableText}>Choose</Text>
               </TouchableOpacity>

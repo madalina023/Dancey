@@ -27,10 +27,10 @@ const PUBLISHABLE_KEY =
 export default function Payment({}) {
   const navigation = useNavigation();
   const route = useRoute();
-  const price = route.params?.price;  
+  const price = route.params?.price;
 
   const subscriptionID = route.params?.subscriptionID;
-const [email, setEmail] = useState();
+  const [email, setEmail] = useState();
   const [cardDetails, setCardDetails] = useState();
   const { confirmPayment, loading } = useConfirmPayment();
   const { user } = useUser();
@@ -38,7 +38,7 @@ const [email, setEmail] = useState();
   useEffect(() => {
     console.log("Received parameters:", route.params);
   }, []);
-  
+
   const fetchPaymentIntentClientSecret = async () => {
     const url = `${API_URL}/create-payment-intent`;
     console.log(`Attempting to fetch from URL: ${url}`);
@@ -102,6 +102,7 @@ const [email, setEmail] = useState();
 
     const currentDate = moment().format("YYYY-MM-DD");
     const currentTime = moment().format("HH:mm:ss");
+    
 
     if (paymentIntent) {
       Alert.alert("Payment Successful", "Thank you for your payment!");
@@ -111,7 +112,8 @@ const [email, setEmail] = useState();
       const subscriptionData = {
         subscriptionID: subscriptionID, // Assuming 'subscriptionID' is the correct field name
         date: currentDate, // Using the variable from the scope
-        time: currentTime, // Using the variable from the scope
+        time: currentTime,
+        statusSubscription: "Active", // Using the variable from the scope
       };
 
       try {

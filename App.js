@@ -7,8 +7,7 @@ import TabNavigation from './App/Navigation/TabNavigation';
 import * as WebBrowser from 'expo-web-browser';
 import { useFonts } from 'expo-font';
 import Colors from './App/Utils/Colors';
-import { LogBox } from 'react-native';
-
+import { LogBox } from 'react-native'; 
 const tokenCache = {
   async getToken(key) {
     try {
@@ -26,6 +25,7 @@ const tokenCache = {
   },
 };
 export default function App() {
+  
   LogBox.ignoreLogs(['ViewPropTypes will be removed']);
 
   const [fontsLoaded, fontError] = useFonts({
