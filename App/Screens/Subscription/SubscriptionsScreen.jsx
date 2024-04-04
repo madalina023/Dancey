@@ -1,36 +1,48 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import Colors from '../../Utils/Colors';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import Colors from "../../Utils/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import GlobalAPI from '../../Utils/GlobalAPI';
-import { Alert } from 'react-native';
+import GlobalAPI from "../../Utils/GlobalAPI";
+import { Alert } from "react-native";
+import { useUser } from "@clerk/clerk-react";
+
 export default function SubscriptionsScreen() {
+  const { user } = useUser();
+
   const navigation = useNavigation();
   const [subscriptions, setSubscriptions] = useState([]);
-const [activeSubscriptions, setActiveSubscriptions] = useState([]);
+  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
 
-const checkSubscriptionAndNavigate = (subscription) => {
-  // Assuming each subscription has a 'statusSubscription' field that could be 'Active' or 'Expired'
-const hasActiveSubscription = activeSubscriptions.some(
-  (sub) => sub.statusSubscription === "Active"
-);
-
-  if (hasActiveSubscription) {
-    Alert.alert("You already have an active subscription.");
-  } else {
-    navigation.navigate("payment", {
-      price: subscription.price * 100,
-      subscriptionID: subscription.id,
-    });
-  }
-};
-console.log("Active subscriptions:", activeSubscriptions);
-
+  const checkSubscriptionAndNavigate = async (subscription) => {
+    const userEmail = user.primaryEmailAddress.emailAddress;
+    if (userEmail) {
+      const result = await GlobalAPI.getActiveSubscription(userEmail);
+      const hasActiveSubscription = result.activeSubscriptions.some(
+        (sub) => sub.statusSubscription === "Active"
+      );
+      if (hasActiveSubscription) {
+        Alert.alert("You already have an active subscription.");
+      } else {
+        navigation.navigate("payment", {
+          price: subscription.price * 100,
+          subscriptionID: subscription.id,
+        });
+      }
+    }
+  };
+  console.log("Active subscriptions:", activeSubscriptions);
 
   useEffect(() => {
     getSubscription();
-     const updateStatuses = async () => {
+    const updateStatuses = async () => {
       try {
         await GlobalAPI.checkAndUpdateSubscriptionStatuses();
         console.log("Subscription statuses updated.");
@@ -38,26 +50,28 @@ console.log("Active subscriptions:", activeSubscriptions);
         console.error("Failed to update subscription statuses:", error);
       }
     };
-  const fetchActiveSubscriptions = async () => {
-    try {
-      const result = await GlobalAPI.getActiveSubscription();
-      setActiveSubscriptions(result.activeSubscriptions); // Adjust based on actual response structure
-    } catch (error) {
-      console.error("Failed to fetch active subscriptions:", error);
-    }
-  };
+    const fetchActiveSubscriptions = async () => {
+      try {
+        const result = await GlobalAPI.getActiveSubscription();
+        setActiveSubscriptions(result.activeSubscriptions); // Adjust based on actual response structure
+      } catch (error) {
+        console.error("Failed to fetch active subscriptions:", error);
+      }
+    };
 
-  fetchActiveSubscriptions();
+    fetchActiveSubscriptions();
     updateStatuses();
   }, []);
 
   const getSubscription = () => {
-    GlobalAPI.getSubscription().then(resp => {
+    GlobalAPI.getSubscription()
+      .then((resp) => {
         setSubscriptions(resp.subscriptions); // Assuming this is the correct path based on your log
-    }).catch(error => {
-        console.error('Failed to fetch subscriptions:', error);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch subscriptions:", error);
         setSubscriptions([]);
-    });
+      });
   };
 
   return (
@@ -69,7 +83,7 @@ console.log("Active subscriptions:", activeSubscriptions);
         >
           <Ionicons name="arrow-back" size={24} color={Colors.BLACK} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Subscriptions</Text>
+        <Text style={styles.headerTitle}>Calendar</Text>
       </View>
       <View style={styles.content}>
         {subscriptions.map((subscription) => (
@@ -97,15 +111,15 @@ console.log("Active subscriptions:", activeSubscriptions);
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
     marginBottom: 20,
-    marginLeft: 15
+    marginLeft: 15,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.BLACK,
     padding: 15,
   },
@@ -116,41 +130,40 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
     marginHorizontal: 15,
-    justifyContent: 'space-between', // This will help in positioning elements inside
+    justifyContent: "space-between", // This will help in positioning elements inside
     flex: 1, // Make sure it's a flex container
   },
-  
+
   fullImage: {
-    width: '100%', // Take full width of the screen
+    width: "100%", // Take full width of the screen
     height: 200, // Adjust the height as needed
-    borderRadius: 8, 
-    objectFit:'fill'
-   },
+    borderRadius: 8,
+    objectFit: "fill",
+  },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 10, // Space between image and text
   },
   priceRow: {
-    flexDirection: 'row', // Lay out children in a row
-    justifyContent: 'space-between', // Space between items
-    alignItems: 'center', // Align items vertically
-    width: '100%', // Ensure the row takes up the full width of the card
+    flexDirection: "row", // Lay out children in a row
+    justifyContent: "space-between", // Space between items
+    alignItems: "center", // Align items vertically
+    width: "100%", // Ensure the row takes up the full width of the card
   },
   price: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   touchableText: {
     fontSize: 16,
     color: Colors.PRIMARY_DARK,
-    backgroundColor: Colors.PRIMARY_OPACITY,  
+    backgroundColor: Colors.PRIMARY_OPACITY,
     paddingHorizontal: 15,
-    paddingVertical: 5,  
-    borderRadius: 10,  
-    overflow: 'hidden',  
-    textAlign: 'center',  
-    marginHorizontal: 10,  
+    paddingVertical: 5,
+    borderRadius: 10,
+    overflow: "hidden",
+    textAlign: "center",
+    marginHorizontal: 10,
   },
-  
 });

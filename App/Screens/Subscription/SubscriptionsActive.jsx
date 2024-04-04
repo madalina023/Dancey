@@ -11,10 +11,12 @@ import Colors from "../../Utils/Colors";
 import { useNavigation } from "@react-navigation/native";
 import GlobalAPI from "../../Utils/GlobalAPI";
 import moment from "moment";
+import { useUser } from "@clerk/clerk-expo";
 
 const SubscriptionsActive = () => {
   const [activeSubscriptions, setActiveSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useUser(); // Using useUser hook to get the logged-in user's details
 
   const calculateExpiryDate = (dateString, timeString) => {
     const now = new Date();
@@ -30,27 +32,32 @@ const SubscriptionsActive = () => {
   };
   useEffect(() => {
     const fetchActiveSubscriptions = async () => {
-      setLoading(true);
-      try {
-        const result = await GlobalAPI.getActiveSubscription();
-        const subscriptionsWithDateTimeAndStatus =
-          result.activeSubscriptions.flatMap((as) =>
-            as.subscriptions.map((sub) => ({
-              ...sub,
-              expiryDate: calculateExpiryDate(as.date, as.time),
-              status: as.statusSubscription, // Add the statusSubscription here
-            }))
-          );
-        setActiveSubscriptions(subscriptionsWithDateTimeAndStatus);
-      } catch (error) {
-        console.error("Error fetching active subscriptions:", error);
-      } finally {
-        setLoading(false);
+      if (user) {
+        setLoading(true);
+        try {
+          // Use primary email address to fetch active subscriptions
+          const userEmail = user.primaryEmailAddress.emailAddress;
+          const result = await GlobalAPI.getActiveSubscription(userEmail);
+          // Further processing to set the active subscriptions
+          const subscriptionsWithDateTimeAndStatus =
+            result.activeSubscriptions.flatMap((as) =>
+              as.subscriptions.map((sub) => ({
+                ...sub,
+                expiryDate: calculateExpiryDate(as.date, as.time),
+                status: as.statusSubscription,
+              }))
+            );
+          setActiveSubscriptions(subscriptionsWithDateTimeAndStatus);
+        } catch (error) {
+          console.error("Error fetching active subscriptions:", error);
+        } finally {
+          setLoading(false);
+        }
       }
     };
-    fetchActiveSubscriptions();
-  }, []);
 
+    fetchActiveSubscriptions();
+  }, [user]); // The
   if (loading) {
     return <ActivityIndicator size="large" />;
   }
@@ -76,7 +83,7 @@ const SubscriptionsActive = () => {
               <Text style={styles.price}>${subscription.price}</Text>
             </View>
             <Text style={styles.dateTime}>
-              {subscription.status === "Active" ? ( 
+              {subscription.status === "Active" ? (
                 <Text>
                   <Text style={{ fontWeight: "bold" }}>Expires at:</Text>{" "}
                   {subscription.expiryDate}
@@ -86,8 +93,7 @@ const SubscriptionsActive = () => {
                   {subscription.expiryDate}
                 </Text>
               )}
-            </Text> 
-            
+            </Text>
           </View>
         </View>
       ))}

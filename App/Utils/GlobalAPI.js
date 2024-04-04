@@ -1,4 +1,6 @@
 import { request, gql } from "graphql-request";
+import bcrypt from "bcryptjs";
+
 const MASTER_URL =
   "https://api-eu-west-2.hygraph.com/v2/cltacnqry2dsn07uzspnwonu5/master";
 const getSlider = async () => {
@@ -128,7 +130,7 @@ const createBooking = async (data) => {
   return result;
 };
 
-const getUserBookings = async (userEmail) => {
+const getUserBookings = async (userEmail, trainerID) => {
   const query =
     gql`
     query GetUserBookings {
@@ -206,7 +208,9 @@ const createActiveSubscription = async (subscriptionData) => {
           subscriptions: { connect: { id: "${subscriptionData.subscriptionID}" } }, 
           date: "${subscriptionData.date}", 
           time: "${subscriptionData.time}",
-          statusSubscription: "${subscriptionData.statusSubscription}" 
+          statusSubscription: "${subscriptionData.statusSubscription}" ,
+          userName:"${subscriptionData.userName}",
+          userEmail:"${subscriptionData.userEmail}"
         }
       ) {
         id
@@ -221,13 +225,15 @@ const createActiveSubscription = async (subscriptionData) => {
   return result;
 };
 
-const getActiveSubscription = async () => {
+const getActiveSubscription = async (userEmail) => {
   const query = gql`
-    query ActiveSubscriptions {
-      activeSubscriptions {
+    query ActiveSubscriptions($userEmail: String!) {
+      activeSubscriptions(where: { userEmail: $userEmail }) {
         date
         time
         statusSubscription
+        userName
+        userEmail
         subscriptions {
           id
           name
@@ -239,9 +245,11 @@ const getActiveSubscription = async () => {
       }
     }
   `;
-  const result = await request(MASTER_URL, query);
+  const variables = { userEmail }; // Ensure this matches your server's expectations
+  const result = await request(MASTER_URL, query, variables); // Passing variables correctly
   return result;
 };
+
 const updateExpiredSubscriptionsStatus = async () => {
   const query = gql`
     query ActiveSubscriptions {
@@ -331,6 +339,74 @@ const getCalendarEventsWithDetails = async () => {
   }
 };
 
+const createUserMutation = gql`
+  mutation createUserAuth(
+    $name: String!
+    $email: String!
+    $mobileNumber: String!
+    $password: String!
+  ) {
+    createUserAuth(
+      data: {
+        name: $name
+        email: $email
+        mobileNumber: $mobileNumber
+        password: $password
+      }
+    ) {
+      id
+    }
+  }
+`;
+
+export const createUser = async (variables) => {
+  try {
+    const response = await request(MASTER_URL, createUserMutation, variables);
+    if (response.errors) {
+      console.error("GraphQL Error:", response.errors);
+      throw new Error("Error creating user in Hygraph.");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Request Failed:", error);
+    throw error; // Rethrow or handle as needed
+  }
+};
+const getUsersAuth = async (email, plainTextPassword) => {
+  const query = gql`
+    query MyQuery($email: String!) {
+      userAuths(where: { email: $email }) {
+        id
+        email
+        name
+        password
+        image {
+          url
+        }
+        mobileNumber
+      }
+    }
+  `;
+
+  const variables = { email };  console.log(`Attempting to fetch user with email: '${email}'`);
+
+
+  try {
+    const result = await request(MASTER_URL, query, variables);
+    console.log("GraphQL Response:", result); // Log the raw response
+
+    if (result.userAuths.length > 0) {
+      // Proceed with authentication...
+    } else {
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    console.error("Authentication error:", error);
+    throw error;
+  }
+};
+
+
 export default {
   getSlider,
   getCategories,
@@ -346,5 +422,7 @@ export default {
   updateExpiredSubscriptionsStatus,
   updateSubscriptionStatus,
   checkAndUpdateSubscriptionStatuses,
-  getCalendarEventsWithDetails
+  getCalendarEventsWithDetails,
+  createUser,
+  getUsersAuth
 };

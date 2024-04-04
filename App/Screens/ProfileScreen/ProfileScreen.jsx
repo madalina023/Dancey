@@ -59,7 +59,7 @@ import { useClerk } from "@clerk/clerk-expo";
       case "Logout":
         signOut()
           .then(() => {
-            navigation.navigate("LoginScreen"); 
+            navigation.navigate("Home"); 
           })
           .catch((err) => {
             console.error("Failed to log out:", err);

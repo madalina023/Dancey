@@ -34,10 +34,23 @@ export default function Payment({}) {
   const [cardDetails, setCardDetails] = useState();
   const { confirmPayment, loading } = useConfirmPayment();
   const { user } = useUser();
+  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
 
-  useEffect(() => {
-    console.log("Received parameters:", route.params);
-  }, []);
+useEffect(() => {
+  const fetchAndSetSubscriptions = async () => {
+    if (user) {
+      const userEmail = user.primaryEmailAddress.emailAddress;
+      try {
+        const activeSubscriptions = await GlobalAPI.getActiveSubscription(userEmail);
+        console.log("Active subscriptions:", activeSubscriptions);
+        setActiveSubscriptions(activeSubscriptions.activeSubscriptions); // Adjust according to actual response structure
+      } catch (error) {
+        console.error("Failed to fetch active subscriptions:", error);
+      }
+    }
+  };
+  fetchAndSetSubscriptions();
+}, [user]); 
 
   const fetchPaymentIntentClientSecret = async () => {
     const url = `${API_URL}/create-payment-intent`;
@@ -114,6 +127,8 @@ export default function Payment({}) {
         date: currentDate, // Using the variable from the scope
         time: currentTime,
         statusSubscription: "Active", // Using the variable from the scope
+        userName: user.fullName, // Assuming 'user' object has a 'fullName' field
+        userEmail: user.primaryEmailAddress.emailAddress, // A
       };
 
       try {
