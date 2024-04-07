@@ -50,14 +50,19 @@ export default function SubscriptionsScreen() {
         console.error("Failed to update subscription statuses:", error);
       }
     };
-    const fetchActiveSubscriptions = async () => {
-      try {
-        const result = await GlobalAPI.getActiveSubscription();
-        setActiveSubscriptions(result.activeSubscriptions); // Adjust based on actual response structure
-      } catch (error) {
-        console.error("Failed to fetch active subscriptions:", error);
-      }
-    };
+const fetchActiveSubscriptions = async () => {
+  try {
+    const userEmail = user.primaryEmailAddress.emailAddress; // Ensure this is defined
+    if (!userEmail) {
+      throw new Error("User email is not defined");
+    }
+    const result = await GlobalAPI.getActiveSubscription(userEmail);
+    setActiveSubscriptions(result.activeSubscriptions);
+  } catch (error) {
+    console.error("Failed to fetch active subscriptions:", error);
+  }
+};
+
 
     fetchActiveSubscriptions();
     updateStatuses();

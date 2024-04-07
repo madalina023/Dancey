@@ -1,6 +1,5 @@
 import { request, gql } from "graphql-request";
-import bcrypt from "bcryptjs";
-
+ 
 const MASTER_URL =
   "https://api-eu-west-2.hygraph.com/v2/cltacnqry2dsn07uzspnwonu5/master";
 const getSlider = async () => {
@@ -102,7 +101,7 @@ const createBooking = async (data) => {
   mutation createBooking {
   createBooking(
     data: {
-      bookingStatus: Booked, 
+      bookingStatus: "Booked", 
       trainer: 
         {connect: {id: "` +
     data.trainerID +
@@ -163,7 +162,48 @@ const getUserBookings = async (userEmail, trainerID) => {
 
   return result;
 };
+// This is a conceptual example. Adjust it according to your actual API's capabilities
+const getBookingsByDateTime = async (date, time) => {
+  const query = gql`
+    query GetBookingsByDateTime($date: String!, $time: String!) {
+      bookings(where: { date: $date, time: $time }) {
+        id
+        date
+        time
+        userEmail
+        userName
+      }
+    }
+  `;
+  const variables = { date, time };
+  const result = await request(MASTER_URL, query, variables);
+  return result;
+};
 
+export const updateBookingStatus = async (bookingId, status) => {
+  console.log(
+    `Attempting to update booking status for booking ID ${bookingId} to ${status}`
+  );
+  const mutation = gql`
+    mutation UpdateBookingStatus($id: ID!, $status: String!) {
+      updateBooking(where: { id: $id }, data: { bookingStatus: $status }) {
+        id
+        bookingStatus
+      }
+    }
+  `;
+
+  const variables = { id: bookingId, status };
+
+  try {
+    const result = await request(MASTER_URL, mutation, variables);
+    console.log("Booking status updated:", result);
+    return result;
+  } catch (error) {
+    console.error("Failed to update booking status:", error);
+    throw new Error("Failed to update booking status.");
+  }
+};
 const cancelBooking = async (bookingId) => {
   const DELETE_BOOKING = gql`
     mutation DeleteBooking($id: ID!) {
@@ -176,13 +216,17 @@ const cancelBooking = async (bookingId) => {
   try {
     const variables = { id: bookingId };
     await request(MASTER_URL, DELETE_BOOKING, variables);
-    alert("Booking canceled successfully!");
-    // Optionally: Update local state or trigger a refetch of bookings
+    
   } catch (error) {
-    console.error("Error canceling booking", error);
-    alert("Failed to cancel booking.");
+    console.log("Error canceling booking:", error);
+
+    // Extracting detailed error message if available
+    const errorMessage =
+      error.response?.errors?.[0]?.message || "Unknown error";
+    
   }
 };
+
 const getSubscription = async (userEmail) => {
   const query = gql`
     query getSubscription {
@@ -388,8 +432,8 @@ const getUsersAuth = async (email, plainTextPassword) => {
     }
   `;
 
-  const variables = { email };  console.log(`Attempting to fetch user with email: '${email}'`);
-
+  const variables = { email };
+  console.log(`Attempting to fetch user with email: '${email}'`);
 
   try {
     const result = await request(MASTER_URL, query, variables);
@@ -405,6 +449,29 @@ const getUsersAuth = async (email, plainTextPassword) => {
     throw error;
   }
 };
+const saveOAuthUser = async (name, email, photoURL) => {
+  const mutation = gql`
+    mutation userAuths($name: String!, $email: String!, $photoURL: String!) {
+      userAuths(data: { name: $name, email: $email, photoURL: $photoURL }) {
+        id
+      }
+    }
+  `;
+
+  try {
+    const response = await request(MASTER_URL, mutation, {
+      name,
+      email,
+      photoURL,
+    });
+    console.log("User saved:", response);
+    return response;
+  } catch (error) {
+    console.error("Error saving OAuth user:", error);
+    throw error;
+  }
+};
+
 
 
 export default {
@@ -415,6 +482,7 @@ export default {
   getTrainersListByStyle,
   createBooking,
   getUserBookings,
+  updateBookingStatus,
   cancelBooking,
   getSubscription,
   createActiveSubscription,
@@ -424,5 +492,6 @@ export default {
   checkAndUpdateSubscriptionStatuses,
   getCalendarEventsWithDetails,
   createUser,
-  getUsersAuth
+  saveOAuthUser,
+  getUsersAuth,getBookingsByDateTime
 };

@@ -5,6 +5,7 @@ import WelcomeScreen from "../Screens/LoginScreen/WelcomeScreen";
 import Signup from "../Screens/LoginScreen/Signup";
 import LoginScreen from "../Screens/LoginScreen/LoginScreen";
 import HomeScreen from "../Screens/HomeScreen/HomeScreen";
+import HomeNavigation from "./HomeNavigation";
 const Stack = createStackNavigator();
 
 function AuthNavigation() {
@@ -14,7 +15,7 @@ function AuthNavigation() {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="Home" component={HomeScreen} />
-    </Stack.Navigator>
+     </Stack.Navigator>
   );
 }
 

@@ -1,18 +1,30 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import Colors from "../../Utils/Colors";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
 import { AntDesign } from "@expo/vector-icons";
 
-export default function TrainerListItem({ trainer, booking, isBookingPage }) {
+export default function TrainerListItem({
+  trainer,
+  booking,
+  onCancel,
+  isBookingPage,
+}) {
   const navigation = useNavigation();
   const [showBookingDetails, setShowBookingDetails] = useState(false);
   const getStatusBackgroundColor = (status) => {
     switch (status) {
       case "Completed":
         return Colors.GREEN_LIGHT; // Ensure Colors.GREEN is defined in your Colors file
-      case "InProgress":
+      case "In Progress":
         return Colors.ORANGE_LIGHT; // Ensure Colors.RED is defined in your Colors file
       case "Booked":
         return Colors.PRIMARY_OPACITY;
@@ -38,8 +50,19 @@ export default function TrainerListItem({ trainer, booking, isBookingPage }) {
             navigation.push("trainers-detail", { trainer: trainer });
           }
         }}
+        disabled={isBookingPage} // This disables the touch if isBookingPage is true
       >
-        <Image source={{ uri: trainer?.images[0]?.url }} style={styles.image} />
+        <View style={styles.imageAndBtncontainer}>
+          <Image
+            source={{ uri: trainer?.images[0]?.url }}
+            style={styles.image}
+          />
+          {isBookingPage && (
+            <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          )}
+        </View>
         <View style={styles.infoContainer}>
           <View style={styles.subcontainer}>
             {/* Name is always displayed */}
@@ -48,7 +71,9 @@ export default function TrainerListItem({ trainer, booking, isBookingPage }) {
             {/* Experience and contact are conditionally rendered based on showBookingDetails */}
             {!showBookingDetails && (
               <>
-                <Text style={styles.experience}>{trainer.experience}</Text>
+                <Text style={styles.experience}>
+                  {trainer.experience} experience
+                </Text>
                 <Text style={styles.contact}>
                   <Entypo name="phone" size={18} color={Colors.PRIMARY} />
                   {trainer.contact}
@@ -84,7 +109,8 @@ export default function TrainerListItem({ trainer, booking, isBookingPage }) {
               </>
             )}
             {isBookingPage && !showBookingDetails && booking?.id && (
-              <TouchableOpacity onPress={() => setShowBookingDetails(true)}>
+              <TouchableOpacity
+                onPress={() => setShowBookingDetails(true)}       >
                 <Text style={styles.toggleBooking}>Show booking</Text>
               </TouchableOpacity>
             )}
@@ -96,10 +122,27 @@ export default function TrainerListItem({ trainer, booking, isBookingPage }) {
 }
 
 const styles = StyleSheet.create({
+  toggleBookingContainer: {
+    alignSelf: "flex-end", // Adjust this if necessary
+  },
+  cancelButton: {
+    // Styling for the cancel button
+    backgroundColor: Colors.PRIMARY,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  cancelButtonText: {
+    color: "white",
+    textAlign: "center",
+  },
   toggleBooking: {
     fontFamily: "Lato-Regular",
     color: Colors.PRIMARY,
     marginTop: 10,
+    alignSelf: "flex-end",
+    paddingHorizontal: 10,
   },
   booked: {
     fontFamily: "Lato-Regular",
@@ -137,7 +180,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     flex: 1,
     marginLeft: 10,
-    justifyContent: "space-between", // Adjust spacing between components
+    justifyContent: "space-between",  
   },
   subcontainer: {
     flexDirection: "column",
@@ -146,7 +189,7 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
-    objectFit:'cover',
+    objectFit: "cover",
     borderRadius: 10,
   },
   contact: {
