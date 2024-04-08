@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, FlexStyle, SafeAreaView } from "react-native";
+import { StyleSheet, Button,Text, View, FlexStyle, SafeAreaView } from "react-native";
 import WelcomeScreen from "./App/Screens/LoginScreen/WelcomeScreen";
-import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { ClerkProvider, SignedIn, SignedOut,useAuth } from "@clerk/clerk-expo";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigation from "./App/Navigation/TabNavigation";
 import * as WebBrowser from "expo-web-browser";
@@ -9,6 +9,8 @@ import { useFonts } from "expo-font";
 import Colors from "./App/Utils/Colors";
 import { LogBox } from "react-native";
 import AuthNavigation from "./App/Navigation/AuthNavigation";
+import Signup from "./App/Screens/LoginScreen/Signup";
+
 
 const tokenCache = {
   async getToken(key) {
@@ -25,7 +27,7 @@ const tokenCache = {
       return;
     }
   },
-};
+};   
 export default function App() {
   LogBox.ignoreLogs(["ViewPropTypes will be removed"]);
 
@@ -36,19 +38,21 @@ export default function App() {
     "Outfit-Medium": require("./assets/fonts/Outfit-Medium.ttf"),
     "Outfit-Regular": require("./assets/fonts/Outfit-Regular.ttf"),
   });
+
   return (
-    <ClerkProvider publishableKey="pk_test_Z3VpZGVkLWZveC04Ni5jbGVyay5hY2NvdW50cy5kZXYk">
+    <ClerkProvider publishableKey="pk_test_Z3VpZGVkLWZveC04Ni5jbGVyay5hY2NvdW50cy5kZXYk"
+    tokenCache={tokenCache}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <SignedIn>
             <NavigationContainer>
               <TabNavigation />
             </NavigationContainer>
+            
           </SignedIn>
           <SignedOut>
             <NavigationContainer>
-              <AuthNavigation />
-              
+              <AuthNavigation/>
             </NavigationContainer>
           </SignedOut>
           <StatusBar style="auto" />
@@ -60,7 +64,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: -10,
+    marginBottom: -10, 
   },
   safeArea: {
     flex: 1,

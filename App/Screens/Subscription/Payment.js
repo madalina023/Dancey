@@ -43,7 +43,7 @@ useEffect(() => {
       try {
         const activeSubscriptions = await GlobalAPI.getActiveSubscription(userEmail);
         console.log("Active subscriptions:", activeSubscriptions);
-        setActiveSubscriptions(activeSubscriptions.activeSubscriptions); // Adjust according to actual response structure
+        setActiveSubscriptions(activeSubscriptions.activeSubscriptions);  
       } catch (error) {
         console.error("Failed to fetch active subscriptions:", error);
       }
@@ -62,7 +62,7 @@ useEffect(() => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          price: price, // Make sure this is correctly set
+          price: price,  
         }),
       });
 

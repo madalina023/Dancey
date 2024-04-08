@@ -18,18 +18,21 @@ import { useOAuth } from "@clerk/clerk-expo";
 import { useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
 import GlobalAPI from "../../Utils/GlobalAPI";
-const Login = ({ navigation }) => {
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+import { useSignIn } from "@clerk/clerk-expo";
 
-  // OAuth logic
+export default function  LoginScreen  ( {navigation})   {
+    
+ const { signIn, setActive, isLoaded } = useSignIn();
+ 
+  const [emailAddress, setEmailAddress] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+   const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  
   WebBrowser.maybeCompleteAuthSession();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-  const authNavigation = useNavigation(); // Use this if you need to navigate after authentication
+  const authNavigation = useNavigation();  
 
   const onPressGoogleSignIn = React.useCallback(async () => {
     console.log("Starting Google OAuth Flow");
@@ -43,25 +46,25 @@ const Login = ({ navigation }) => {
       console.error("OAuth error", err);
     }
   }, []);
-  const handleLogin = async () => {
-    setError("");
-    setIsLoading(true);
-    try {
-      // Assuming getUsersAuth is properly exported and imported
-      const user = await GlobalAPI.getUsersAuth(email, password);
-      console.log("Login successful", user);
-      console.log(navigation.getState());
-      navigation.navigate( ); // Make sure 'Home' matches the screen name in your Stack.Navigator
 
-      setIsLoading(false);
-      // Navigate to your main app screen here
-    } catch (error) {
-      console.error(error);
-      setError("Failed to login. Please check your credentials.");
-      setIsLoading(false);
+ 
+  const onSignInPress = async () => {
+    if (!isLoaded) {
+      return;
+    }
+ 
+    try {
+      const completeSignIn = await signIn.create({
+        identifier: emailAddress,
+        password,
+      });
+      // This is an important step,
+      // This indicates the user is signed in
+      await setActive({ session: completeSignIn.createdSessionId });
+    } catch (err ) {
+      console.log(err);
     }
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainView}>
@@ -73,12 +76,11 @@ const Login = ({ navigation }) => {
           <Text style={styles.inputLabel}>Email address</Text>
           <View style={styles.textInputContainer}>
             <TextInput
-              placeholder="Enter your email address"
-              placeholderTextColor={Colors.BLACK}
-              keyboardType="email-address"
               style={styles.textInput}
-              value={email}
-              onChangeText={setEmail}
+              autoCapitalize="none"
+              value={emailAddress}
+              placeholder="Email..."
+              onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
             />
           </View>
         </View>
@@ -87,15 +89,12 @@ const Login = ({ navigation }) => {
           <Text style={styles.inputLabel}>Password</Text>
           <View style={styles.textInputContainer}>
             <TextInput
-              placeholder="Enter your password"
-              placeholderTextColor={Colors.BLACK}
+              value={password}
+              placeholder="Password..."
               secureTextEntry={!isPasswordShown}
               style={styles.textInput}
-              value={password}
-              onChangeText={setPassword}
+              onChangeText={(password) => setPassword(password)}
             />
-            {error ? <Text style={styles.error}>{error}</Text> : null}
-
             <TouchableOpacity
               onPress={() => setIsPasswordShown(!isPasswordShown)}
               style={styles.eyeIcon}
@@ -109,24 +108,9 @@ const Login = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={styles.rememberMeContainer}>
-          <Checkbox
-            style={styles.checkbox}
-            value={isChecked}
-            onValueChange={setIsChecked}
-            color={isChecked ? Colors.PRIMARY : undefined}
-          />
-          <Text>Remember Me</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.loginButton}
-          disabled={isLoading}
-          onPress={handleLogin}
-        >
-          <Text style={styles.loginButtonText}>Login</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={onSignInPress}>
+          <Text>Login</Text>
         </TouchableOpacity>
-
         <View style={styles.orLoginWithContainer}>
           <View style={styles.line} />
           <Text style={styles.orLoginWithText}>Or Login with</Text>
@@ -141,7 +125,6 @@ const Login = ({ navigation }) => {
             <Text>Google</Text>
           </TouchableOpacity>
         </View>
-
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>Don't have an account ?</Text>
           <Pressable onPress={() => navigation.navigate("Signup")}>
@@ -151,7 +134,8 @@ const Login = ({ navigation }) => {
       </View>
     </SafeAreaView>
   );
-};
+}
+   
 
 const styles = StyleSheet.create({
   container: {
@@ -186,7 +170,7 @@ const styles = StyleSheet.create({
   textInputContainer: {
     width: "100%",
     height: 48,
-    borderColor: Colors.BLACK,
+    borderColor: Colors.PRIMARY,
     borderWidth: 1,
     borderRadius: 8,
     alignItems: "center",
@@ -266,5 +250,4 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
-
-export default Login;
+ 
