@@ -12,27 +12,22 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "../../Utils/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox";
 import { AntDesign } from "@expo/vector-icons";
 import { useOAuth } from "@clerk/clerk-expo";
 import { useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
-import GlobalAPI from "../../Utils/GlobalAPI";
 import { useSignIn } from "@clerk/clerk-expo";
 
-export default function  LoginScreen  ( {navigation})   {
-    
- const { signIn, setActive, isLoaded } = useSignIn();
- 
+export default function LoginScreen({ navigation }) {
+  const { signIn, setActive, isLoaded } = useSignIn();
+
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-   const [isPasswordShown, setIsPasswordShown] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-  
+  const [isPasswordShown, setIsPasswordShown] = useState(false);
+
   WebBrowser.maybeCompleteAuthSession();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-  const authNavigation = useNavigation();  
 
   const onPressGoogleSignIn = React.useCallback(async () => {
     console.log("Starting Google OAuth Flow");
@@ -40,19 +35,17 @@ export default function  LoginScreen  ( {navigation})   {
       const { createdSessionId, setActive } = await startOAuthFlow();
       if (createdSessionId) {
         setActive({ session: createdSessionId });
-    
       }
     } catch (err) {
       console.error("OAuth error", err);
     }
   }, []);
 
- 
   const onSignInPress = async () => {
     if (!isLoaded) {
       return;
     }
- 
+
     try {
       const completeSignIn = await signIn.create({
         identifier: emailAddress,
@@ -61,7 +54,7 @@ export default function  LoginScreen  ( {navigation})   {
       // This is an important step,
       // This indicates the user is signed in
       await setActive({ session: completeSignIn.createdSessionId });
-    } catch (err ) {
+    } catch (err) {
       console.log(err);
     }
   };
@@ -108,12 +101,27 @@ export default function  LoginScreen  ( {navigation})   {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={onSignInPress}>
-          <Text>Login</Text>
-        </TouchableOpacity>
+        <View style={styles.loginButtonContainer}>
+          <TouchableOpacity style={styles.loginButton} onPress={onSignInPress}>
+            <Text style={styles.loginButtonText}>Login</Text>
+          </TouchableOpacity>
+          <View style={styles.forgotPasswordContainer}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("reset-password")}
+            >
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+  <View style={styles.registerContainer}>
+          <Text style={styles.registerText}>Don't have an account ?</Text>
+          <Pressable onPress={() => navigation.navigate("Signup")}>
+            <Text style={styles.registerLink}>Register</Text>
+          </Pressable>
+        </View>
         <View style={styles.orLoginWithContainer}>
           <View style={styles.line} />
-          <Text style={styles.orLoginWithText}>Or Login with</Text>
+          <Text style={styles.orLoginWithText}>Or login with</Text>
           <View style={styles.line} />
         </View>
         <View style={styles.socialLoginContainer}>
@@ -125,17 +133,11 @@ export default function  LoginScreen  ( {navigation})   {
             <Text>Google</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>Don't have an account ?</Text>
-          <Pressable onPress={() => navigation.navigate("Signup")}>
-            <Text style={styles.registerLink}>Register</Text>
-          </Pressable>
-        </View>
+      
       </View>
     </SafeAreaView>
   );
 }
-   
 
 const styles = StyleSheet.create({
   container: {
@@ -192,6 +194,18 @@ const styles = StyleSheet.create({
   checkbox: {
     marginRight: 8,
   },
+  loginButtonContainer: {
+    alignItems: "center", // Center children horizontally
+    width: "100%", // Ensure the container takes full width to center children correctly
+  },
+  forgotPasswordContainer: {
+    marginTop: 10, // Add some space between the login button and the forgot password link
+  },
+  forgotPasswordText: {
+    color: Colors.PRIMARY, // Use your theme color or any color that indicates an action/link
+    fontSize: 16,
+  },
+  // Update the loginButton style as needed
   loginButton: {
     height: 52,
     justifyContent: "center",
@@ -199,6 +213,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.PRIMARY,
     borderRadius: 10,
     paddingHorizontal: 30,
+    width: "80%", // Adjust the width as needed
     marginVertical: 10,
   },
   loginButtonText: {
@@ -207,7 +222,8 @@ const styles = StyleSheet.create({
   },
   orLoginWithContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
+    marginTop: 190,
     marginVertical: 20,
   },
   line: {
@@ -230,9 +246,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 52,
     borderWidth: 1,
-    borderColor: Colors.grey,
-    marginRight: 4,
-    borderRadius: 10,
+    borderColor: Colors.PRIMARY,
+    marginRight: 4, 
+    borderRadius: 10, 
   },
   registerContainer: {
     flexDirection: "row",
@@ -250,4 +266,3 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
- 

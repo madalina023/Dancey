@@ -10,6 +10,7 @@ import Colors from "./App/Utils/Colors";
 import { LogBox } from "react-native";
 import AuthNavigation from "./App/Navigation/AuthNavigation";
 import Signup from "./App/Screens/LoginScreen/Signup";
+import * as SecureStore from "expo-secure-store";
 
 
 const tokenCache = {
@@ -27,7 +28,7 @@ const tokenCache = {
       return;
     }
   },
-};   
+};    
 export default function App() {
   LogBox.ignoreLogs(["ViewPropTypes will be removed"]);
 
@@ -40,19 +41,20 @@ export default function App() {
   });
 
   return (
-    <ClerkProvider publishableKey="pk_test_Z3VpZGVkLWZveC04Ni5jbGVyay5hY2NvdW50cy5kZXYk"
-    tokenCache={tokenCache}>
+    <ClerkProvider
+      publishableKey="pk_test_aG9uZXN0LWxhYi02Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+      tokenCache={tokenCache}
+    >
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <SignedIn>
             <NavigationContainer>
               <TabNavigation />
             </NavigationContainer>
-            
           </SignedIn>
           <SignedOut>
             <NavigationContainer>
-              <AuthNavigation/>
+              <AuthNavigation />
             </NavigationContainer>
           </SignedOut>
           <StatusBar style="auto" />

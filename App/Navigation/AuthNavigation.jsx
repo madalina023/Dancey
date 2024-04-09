@@ -5,7 +5,7 @@ import WelcomeScreen from "../Screens/LoginScreen/WelcomeScreen";
 import Signup from "../Screens/LoginScreen/Signup";
 import LoginScreen from "../Screens/LoginScreen/LoginScreen";
 import HomeScreen from "../Screens/HomeScreen/HomeScreen";
-import HomeNavigation from "./HomeNavigation";
+import ForgotPasswordScreen from "../Screens/LoginScreen/ForgotPasswordScreen";
 const Stack = createStackNavigator();
 
 function AuthNavigation() {
@@ -14,8 +14,9 @@ function AuthNavigation() {
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={Signup} />
-      <Stack.Screen name="Home" component={HomeScreen} />
-     </Stack.Navigator>
+      <Stack.Screen name="Home" component={HomeScreen} /> 
+      <Stack.Screen name="reset-password" component={ForgotPasswordScreen} />
+    </Stack.Navigator>
   );
 }
 

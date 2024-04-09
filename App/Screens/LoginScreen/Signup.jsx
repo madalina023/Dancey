@@ -17,8 +17,7 @@ import { AntDesign } from "@expo/vector-icons";
 
 import * as WebBrowser from "expo-web-browser";  
 import { ScrollView } from "react-native-gesture-handler";
-import GlobalAPI from "../../Utils/GlobalAPI";
-const bcrypt = require("bcryptjs");
+  
 import { useOAuth, useSignUp } from "@clerk/clerk-expo";
 import { useNavigation } from "@react-navigation/native";
  export default function Signup({navigation}) {
@@ -32,15 +31,13 @@ import { useNavigation } from "@react-navigation/native";
   const [code, setCode] = React.useState("");
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+ 
+   
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   
+   
   WebBrowser.maybeCompleteAuthSession();
-  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-  const authNavigation = useNavigation(); // Use this if you need to navigate after authentication
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" }); 
 
   const onPressGoogleSignIn = React.useCallback(async () => {
     console.log("Starting Google OAuth Flow");
@@ -138,24 +135,7 @@ import { useNavigation } from "@react-navigation/native";
                     style={styles.input}
                   />
                 </View>
-                <View style={{ marginBottom: 12 }}>
-                  <Text style={styles.label}>Mobile Number</Text>
-                  <View style={styles.phoneNumberContainer}>
-                    <TextInput
-                      placeholder="+40"
-                      placeholderTextColor={Colors.BLACK}
-                      keyboardType="numeric"
-                      style={styles.phoneNumberInput}
-                    />
-                    <TextInput
-                      placeholder="Enter your phone number"
-                      keyboardType="numeric"
-                      style={styles.phoneNumber}
-                      onChangeText={setMobileNumber}
-                      value={mobileNumber}
-                    />
-                  </View>
-                </View>
+               
                 <Text style={styles.label}>Password</Text>
                 <View style={styles.inputContainer}>
                   <TextInput
