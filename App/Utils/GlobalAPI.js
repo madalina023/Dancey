@@ -1,4 +1,4 @@
-import { request, gql } from "graphql-request";
+ import { request, gql } from "graphql-request";
 
 const MASTER_URL =
   "https://api-eu-west-2.hygraph.com/v2/cltacnqry2dsn07uzspnwonu5/master";
