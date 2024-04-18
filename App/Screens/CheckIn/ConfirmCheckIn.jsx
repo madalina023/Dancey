@@ -66,7 +66,7 @@ const fetchData = async () => {
           currentDate
         );
         Alert.alert(
-          "Check-In successful",
+          "Check-in successful",
           `You have checked in to: ${checkInData.calendar.danceStyles
             .map((ds) => ds.name)
             .join(", ")} - Level: ${checkInData.calendar.level}`,
