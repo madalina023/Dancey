@@ -66,12 +66,12 @@ const fetchData = async () => {
           currentDate
         );
         Alert.alert(
-          "Check-In Successful",
+          "Check-In successful",
           `You have checked in to: ${checkInData.calendar.danceStyles
             .map((ds) => ds.name)
             .join(", ")} - Level: ${checkInData.calendar.level}`,
           [
-            {
+            { 
               text: "OK",
               onPress: () => navigation.navigate("home"), // Replace 'Home' with the actual route name of your home page
             },
