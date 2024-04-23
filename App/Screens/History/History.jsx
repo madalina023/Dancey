@@ -4,24 +4,68 @@ import GlobalAPI from "../../Utils/GlobalAPI";
 import { useUser } from "@clerk/clerk-expo";
 import PageHeading from "../../Components/PageHeading";
 import Colors from "../../Utils/Colors";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
 
 export default function History() {
   const [checkIns, setCheckIns] = useState([]);
   const { user } = useUser();
 
+  // Level mapping from current level to the next level
+  const nextLevelMapping = {
+    Beginner: "Intermediate",
+    Intermediate: "Advanced",
+  };
+
   useEffect(() => {
-    const fetchCheckIns = async () => {
+    async function fetchAndCheckCheckIns() {
       try {
         const userEmail = user.primaryEmailAddress.emailAddress;
         const userCheckIns = await GlobalAPI.getUserCheckIns(userEmail);
         setCheckIns(userCheckIns);
+        checkLevelCounts(userCheckIns);
       } catch (error) {
-        console.log(error);
+        console.error("Failed to fetch check-ins:", error);
       }
-    };
+    }
 
-    fetchCheckIns();
+    fetchAndCheckCheckIns();
   }, []);
+
+  const checkLevelCounts = async (checkIns) => {
+    const levelCounts = checkIns.reduce((acc, item) => {
+      const level = item.calendar.level;
+      acc[level] = (acc[level] || 0) + 1;
+      return acc;
+    }, {});
+
+    Object.keys(levelCounts).forEach((level) => {
+      if (levelCounts[level] > 1 && nextLevelMapping[level]) {
+        sendNotification(
+          `You are ready to go to the next level - ${nextLevelMapping[level]}.`
+        );
+      }
+    });
+  };
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true, // Show alert even when app is in foreground
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+
+  async function sendNotification(message) {
+    console.log("Sending notification with message:", message);
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "It is time to advance to the next level!",
+        body: message,
+      },
+      trigger: null, // Instant notification
+    });
+  }
 
   return (
     <View style={styles.container}>

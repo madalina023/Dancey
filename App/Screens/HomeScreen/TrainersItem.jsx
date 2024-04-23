@@ -3,18 +3,22 @@ import React from "react";
 import Colors from "../../Utils/Colors";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/core";
-
-export default function TrainersItem({ trainer }) {
+export default function TrainersItem({ trainer, onSelect }) {
   const navigation = useNavigation();
+
+const handlePress = () => {
+  
+  if (onSelect) {
+    onSelect(); // This will close the modal
+  }
+  navigation.push("trainers-detail", {
+    trainer: trainer,
+  });
+};
+
+
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() =>
-        navigation.push("trainers-detail", {
-          trainer: trainer,
-        })
-      }
-    >
+    <TouchableOpacity style={styles.container} onPress={handlePress}>
       <Image source={{ uri: trainer.images[0]?.url }} style={styles.image} />
       <View>
         <Text style={{ fontSize: 16, fontFamily: "Lato-Bold", marginTop: 5 }}>
@@ -31,7 +35,6 @@ export default function TrainersItem({ trainer }) {
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     padding: 10,

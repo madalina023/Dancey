@@ -29,6 +29,10 @@ export default function Categories() {
   };
 
   const navigateToCategory = (categoryName) => {
+   
+    setModalVisible(false); // Make sure this is being called
+   
+
     switch (categoryName) {
       case "Classes":
         navigation.push("classes");
@@ -50,6 +54,7 @@ export default function Categories() {
         break;
     }
   };
+
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -88,6 +93,7 @@ export default function Categories() {
               data={categories}
               renderItem={renderItem}
               keyExtractor={(item) => item.id.toString()}
+              numColumns={3} // Set this to 2 for a two-column grid
             />
             <TouchableOpacity
               style={styles.closeButton}
@@ -129,21 +135,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.6)",
   },
   modalView: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
+    backgroundColor: Colors.WHITE,
+    borderRadius: 30,
+    padding: 40,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: Colors.PRIMARY_LIGHT,
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.5,
     shadowRadius: 4,
-    elevation: 5,
+    elevation: 15,
     width: "90%",
   },
   closeButton: {
@@ -151,5 +157,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.PRIMARY,
     padding: 10,
     elevation: 2,
+    borderRadius: 10,
   },
 });

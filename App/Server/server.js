@@ -1,8 +1,8 @@
-const express = require("express");
-const Stripe = require("stripe");
-const QRCode = require("qrcode");
-const fs = require("fs");
-const path = require("path");
+import express from "express"
+import Stripe from "stripe";
+import QRCode from "qrcode"
+import fs from "fs"
+import path from "path";
 const app = express();
 const port = 5000;
 const PUBLISHABLE_KEY =

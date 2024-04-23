@@ -17,6 +17,7 @@ import Signup from "../Screens/LoginScreen/Signup";
 import LoginScreen from "../Screens/LoginScreen/LoginScreen";
 import ConfirmCheckIn from "../Screens/CheckIn/ConfirmCheckIn";
 import History from "../Screens/History/History";
+import RecommendationScreen from "../Screens/Recommendation/RecommendationScreen";
 const Stack = createStackNavigator();
 
 export default function HomeNavigation() {
@@ -41,6 +42,7 @@ export default function HomeNavigation() {
       <Stack.Screen name="check-in" component={CheckIn} />
       <Stack.Screen name="ConfirmCheckIn" component={ConfirmCheckIn} />
       <Stack.Screen name="history" component={History} />
+      <Stack.Screen name="recommendations" component={RecommendationScreen} />
     </Stack.Navigator>
   );
 }

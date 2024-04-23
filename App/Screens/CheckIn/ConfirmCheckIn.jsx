@@ -9,20 +9,40 @@ function ConfirmCheckInPage({ navigation }) { const { user } = useUser();
  
    const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState();
- useEffect(() => {
-const fetchData = async () => {
-  try {
-    const eventsToday = await GlobalAPI.getCalendarEventsWithDetails();
-    console.log("Fetched events:", eventsToday); // Debugging line
-    setEvents(eventsToday);
-  } catch (error) {
-    console.error("Failed to load events", error);
-  }
-};
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const eventsToday = await GlobalAPI.getCalendarEventsWithDetails();
+      console.log("Fetched events:", eventsToday);
 
-   fetchData();
- }, []);
-   
+      const dayNames = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const todayDayOfWeek = dayNames[new Date().getDay()]; // This will give you the full day name
+
+      const filteredEvents = eventsToday.filter(
+        (event) => event.dayOfWeek === todayDayOfWeek // Use the full string name to filter
+      );
+
+      console.log("Today's day of the week:", todayDayOfWeek);
+      console.log("Events fetched:", eventsToday);
+      console.log("Filtered events:", filteredEvents);
+
+      setEvents(filteredEvents);
+    } catch (error) {
+      console.error("Failed to load events", error);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   const handleConfirmCheckIn = async () => {
     if (!selectedEvent) {

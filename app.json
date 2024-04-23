@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Dancey",
-    "slug": "Dancey",
+    "slug": "dancey",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,8 +23,18 @@
         "backgroundColor": "#ffffff"
       }
     },
+    "notification": {
+      "icon": "./assets/images/notification.png",
+      "color": "#ffffff"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e2b22bc2-78d1-47ac-82f5-01af480dda6d"
+      }
+    },
+    "owner": "madalinademian"
   }
 }

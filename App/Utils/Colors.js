@@ -4,6 +4,7 @@ export default {
   PRIMARY_OPACITY: "rgba(245, 175, 201, 0.5)",
   PRIMARY_OPACITY2: "rgba(245, 175, 201, 0.3)",
   PRIMARY_LIGHT: "rgba(245, 175, 201, 0.1111)",
+  WHITE_SHADOW: "rgba(255, 255, 255, 0.4)",
   WHITE: "#FFFFFF",
   GRAY: "#808080",
   LIGHT_GRAY: "#888787",
