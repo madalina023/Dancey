@@ -3,6 +3,7 @@ import React from "react";
 import { Stack } from "expo-router";
 import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-expo";
 import { useFonts } from "expo-font";
+import { NotificationProvider } from "@/components/NotificationContext";
 
 const tokenCache = {
   async getToken(key) {
@@ -28,10 +29,7 @@ export default function HomeLayout() {
     });
 
   return (
-    <ClerkProvider
-      publishableKey="pk_test_dG9nZXRoZXItdGljay03MC5jbGVyay5hY2NvdW50cy5kZXYk"
-      tokenCache={tokenCache}
-    >
+    <NotificationProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="login-screen" />
@@ -49,6 +47,6 @@ export default function HomeLayout() {
         <Stack.Screen name="trainers-list" />
       
       </Stack>
-    </ClerkProvider>
+    </NotificationProvider>
   );
 } 

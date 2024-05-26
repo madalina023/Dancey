@@ -93,7 +93,7 @@ export default function Payment({}) {
   const validateCardExpiry = (expiryMonth, expiryYear) => {
     const currentYear = new Date().getFullYear();
     const maxYear = currentYear + 5;
-    if ( expiryYear > maxYear) {
+    if (expiryYear > maxYear) {
       return false;
     }
     return true;
@@ -155,7 +155,7 @@ export default function Payment({}) {
         date: currentDate,
         time: currentTime,
         statusSubscription: "Active",
-        userName: user.given_name,
+        userName: user.given_name + " " + user.family_name,
         userEmail: user.email,
       };
 

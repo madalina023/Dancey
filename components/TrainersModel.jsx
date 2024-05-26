@@ -18,17 +18,20 @@ import GlobalAPI from "@/utils/GlobalAPI";
 import { useUser } from "@clerk/clerk-expo";
 import moment from "moment";
 import { client } from "@/utils/KindeConfig";
-export default function TrainersModel({ trainerID = null, hideModal = () => {} }) {
+export default function TrainersModel({
+  trainerID = null,
+  hideModal = () => {},
+}) {
   const [timeList, setTimeList] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [note, setNote] = useState("");
   const [user, setUser] = useState();
-  
+
   useEffect(() => {
     getUserData();
   }, []);
-  
+
   const getUserData = async () => {
     const user = await client.getUserDetails();
     setUser(user);
