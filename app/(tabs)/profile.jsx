@@ -54,7 +54,7 @@ export default function ProfileScreen() {
       name: "Logout",
       icon: "log-out",
     },
-  ];
+  ]; 
   const handlePress = (item) => {
     switch (item.name) {
       case "Home":
