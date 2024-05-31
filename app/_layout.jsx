@@ -43,9 +43,9 @@ export default function HomeLayout() {
         <Stack.Screen name="subscriptions-active" />
         <Stack.Screen name="payment" />
         <Stack.Screen name="history" />
+        <Stack.Screen name="recommendations" />
         <Stack.Screen name="description-classes" />
         <Stack.Screen name="trainers-list" />
-      
       </Stack>
     </NotificationProvider>
   );

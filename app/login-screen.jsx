@@ -1,30 +1,28 @@
-import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native";
-import React from "react";
-import Colors from "@/constants/Colors";
-import { client } from "@/utils/KindeConfig";
-import services from "@/utils/services";
-import { useRouter } from "expo-router";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,Pressable
+} from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { useOAuth } from "@clerk/clerk-expo";
+import { useNavigation } from "@react-navigation/core";
 import * as WebBrowser from "expo-web-browser";
 import { useSignIn } from "@clerk/clerk-expo";
-import { useOAuth } from "@clerk/clerk-expo";
+import Colors from "@/constants/Colors";
 
 export default function LoginScreen() {
-  const router = useRouter();
+  const { signIn, setActive, isLoaded } = useSignIn();
+  const navigation = useNavigation();
 
-  const handleSignIn = async () => {
-    try {
-      const token = await client.login();
-      if (token) {
-        await services.storeData("login", "true");
-        router.replace("/");
-      } else {
-        console.error("No token received");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      // Handle specific error types if necessary
-    }
-  };
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [isPasswordShown, setIsPasswordShown] = useState(false);
 
   WebBrowser.maybeCompleteAuthSession();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -35,93 +33,243 @@ export default function LoginScreen() {
       const { createdSessionId, setActive } = await startOAuthFlow();
       if (createdSessionId) {
         setActive({ session: createdSessionId });
+      } else {
+        console.error("No session created");
       }
     } catch (err) {
       console.error("OAuth error", err);
     }
-  }, []);
+  }, [startOAuthFlow]);
+
+  const onSignInPress = async () => {
+    console.log("Sign In button pressed");
+    if (!isLoaded) {
+      console.log("Sign In not loaded");
+      return;
+    }
+
+    try {
+      const completeSignIn = await signIn.create({
+        identifier: emailAddress,
+        password,
+      });
+      // This is an important step,
+      // This indicates the user is signed in
+      await setActive({ session: completeSignIn.createdSessionId });
+    } catch (err) {
+      console.error("Sign In error", err);
+    }
+  };
+
+  if (!isLoaded) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color={Colors.PRIMARY} />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <View style={{ flex: 1, alignItems: "center" }}>
-      <Image
-        source={require("@/assets/images/logo-dancey.png")}
-        style={styles.loginImage}
-      />
-      <View style={styles.container}>
-        <View style={styles.subContainer}>
-          <Text style={styles.titleText}>
-            Find
-            <Text style={{ fontWeight: "bold" }}> your favorite</Text> styles.
-          </Text>
-          <Text style={styles.descriptionText}>
-            A dynamic dance school where mirrored walls echo the dedication of
-            students.
-          </Text>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Join now</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.mainView}>
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>Hi, Welcome Back! </Text>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Email address</Text>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={styles.textInput}
+              autoCapitalize="none"
+              value={emailAddress}
+              placeholder="Email..."
+              onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Password</Text>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              value={password}
+              placeholder="Password..."
+              secureTextEntry={!isPasswordShown}
+              style={styles.textInput}
+              onChangeText={(password) => setPassword(password)}
+            />
+            <TouchableOpacity
+              onPress={() => setIsPasswordShown(!isPasswordShown)}
+              style={styles.eyeIcon}
+            >
+              {isPasswordShown ? (
+                <Ionicons name="eye-off" size={24} color={Colors.BLACK} />
+              ) : (
+                <Ionicons name="eye" size={24} color={Colors.BLACK} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.loginButtonContainer}>
+          <TouchableOpacity style={styles.loginButton} onPress={onSignInPress}>
+            <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
+          <View style={styles.forgotPasswordContainer}>
+            <TouchableOpacity onPress={() => navigation.push("reset-password")}>
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.registerContainer}>
+          <Text style={styles.registerText}>Don't have an account ?</Text>
+          <Pressable onPress={() => navigation.navigate("signup")}>
+            <Text style={styles.registerLink}>Register</Text>
+          </Pressable>
+        </View>
+        <View style={styles.orLoginWithContainer}>
+          <View style={styles.line} />
+          <Text style={styles.orLoginWithText}>Or login with</Text>
+          <View style={styles.line} />
+        </View>
+        <View style={styles.socialLoginContainer}>
           <TouchableOpacity
-            style={styles.btnAccount}
-            onPress={handleSignIn}
+            onPress={onPressGoogleSignIn}
+            style={styles.socialButton}
           >
-            <Text style={styles.buttonAccount}>Already having an account?</Text>
+            <AntDesign name="google" size={20} color="black" />
+            <Text>Google</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  loginImage: {
-    width: "100%",
-    height: "100%",
-    position: "relative",
-    top: 0,
-    left: 0,
-  },
   container: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignItems: "center",
+    flex: 1,
+    backgroundColor: Colors.WHITE,
   },
-  subContainer: {
-    backgroundColor: Colors.PRIMARY_OPACITY,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 30,
+  mainView: {
+    flex: 1,
+    marginHorizontal: 22,
+  },
+  welcomeContainer: {
+    marginVertical: 22,
+  },
+  welcomeText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginVertical: 12,
+    color: Colors.BLACK,
+  },
+  missedText: {
+    fontSize: 16,
+    color: Colors.BLACK,
+  },
+  inputContainer: {
+    marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: "400",
+    marginVertical: 8,
+  },
+  textInputContainer: {
+    width: "100%",
+    height: 48,
+    borderColor: Colors.PRIMARY,
+    borderWidth: 1,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingLeft: 22,
+    position: "relative", // Added for positioning the eye icon correctly
+  },
+  textInput: {
     width: "100%",
   },
-  titleText: {
-    fontSize: 27,
-    color: Colors.WHITE,
-    textAlign: "center",
+  eyeIcon: {
+    position: "absolute",
+    right: 12,
   },
-  descriptionText: {
-    fontSize: 17,
-    color: Colors.WHITE,
-    textAlign: "center",
-    marginTop: 20,
+  rememberMeContainer: {
+    flexDirection: "row",
+    marginVertical: 6,
   },
-  button: {
-    padding: 15,
-    backgroundColor: Colors.WHITE,
-    borderRadius: 99,
-    marginTop: 20,
+  checkbox: {
+    marginRight: 8,
   },
-  btnAccount: {
-    padding: 15,
-    borderRadius: 99,
-    marginTop: 20,
-    display: "flex",
+  loginButtonContainer: {
+    alignItems: "center", // Center children horizontally
+    width: "100%", // Ensure the container takes full width to center children correctly
+  },
+  forgotPasswordContainer: {
+    marginTop: 10, // Add some space between the login button and the forgot password link
+  },
+  forgotPasswordText: {
+    color: Colors.PRIMARY, // Use your theme color or any color that indicates an action/link
+    fontSize: 16,
+  },
+  // Update the loginButton style as needed
+  loginButton: {
+    height: 52,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    width: "80%", // Adjust the width as needed
+    marginVertical: 10,
+  },
+  loginButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+  },
+  orLoginWithContainer: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    marginTop: 190,
+    marginVertical: 20,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.grey,
+    marginHorizontal: 10,
+  },
+  orLoginWithText: {
+    fontSize: 14,
+  },
+  socialLoginContainer: {
     flexDirection: "row",
     justifyContent: "center",
   },
-  buttonText: {
-    textAlign: "center",
-    fontSize: 17,
+  socialButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    height: 52,
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY,
+    marginRight: 4,
+    borderRadius: 10,
+  },
+  registerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 22,
+  },
+  registerText: {
+    fontSize: 16,
     color: Colors.BLACK,
   },
-  buttonAccount: { fontSize: 17, color: Colors.WHITE },
+  registerLink: {
+    fontSize: 16,
+    color: Colors.PRIMARY,
+    fontWeight: "bold",
+    marginLeft: 6,
+  },
 });

@@ -87,7 +87,7 @@ export default function CheckIn() {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.134:5001/validate-qr",
+        "http://192.168.1.134:5000/validate-qr",
         { qrData: data },
         { timeout: 30000 }
       );

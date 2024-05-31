@@ -48,9 +48,13 @@ export default function ProfileScreen() {
       name: "Subscriptions",
       icon: "bag-check",
     },
-   
     {
       id: 5,
+      name: "Recommendations",
+      icon: "bulb",
+    },
+    {
+      id: 6,
       name: "Logout",
       icon: "log-out",
     },
@@ -73,7 +77,9 @@ export default function ProfileScreen() {
       case "Subscriptions":
         navigation.navigate("subscriptions-active");
         break;
-     
+      case "Recommendations":
+        navigation.navigate("recommendations");
+        break;
       case "Logout":
         handleLogout();
 

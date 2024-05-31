@@ -6,7 +6,9 @@ import services from '@/utils/services';
 import { useRouter } from 'expo-router';
 export default function LoginScreen() {
   const router = useRouter();
-
+  const onPressLogin = () => {
+    navigation.navigate("Login"); // Navigate to Login screen, ensure this is the correct name
+  };
   const handleSignIn = async () => {
     try {
       const token = await client.login();
@@ -35,13 +37,13 @@ export default function LoginScreen() {
             <Text style={{ fontWeight: "bold" }}> your favorite</Text> styles.
           </Text>
           <Text style={styles.descriptionText}>
-            A dynamic dance school where mirrored walls echo the dedication of
-            students.
+            Welcome to the dynamic dance school app and elevate your dance journey
+            with passion. 
           </Text>
-          <TouchableOpacity style={styles.button}  >
+          <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Join now</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnAccount}  onPress={handleSignIn}>
+          <TouchableOpacity style={styles.btnAccount} onPress={handleSignIn}>
             <Text style={styles.buttonAccount}>Already having an account?</Text>
           </TouchableOpacity>
         </View>
@@ -78,13 +80,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   descriptionText: {
-    fontSize: 17,
+    fontSize: 15,
     color: Colors.WHITE,
     textAlign: "center",
     marginTop: 20,
   },
   button: {
-    padding: 15,
+    padding: 20,
     backgroundColor: Colors.WHITE,
     borderRadius: 99,
     marginTop: 20,
@@ -92,7 +94,7 @@ const styles = StyleSheet.create({
   btnAccount: {
     padding: 15,
     borderRadius: 99,
-    marginTop: 20,
+    marginTop: 10,
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
