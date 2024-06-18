@@ -37,10 +37,10 @@ export default function LoginScreen() {
             <Text style={{ fontWeight: "bold" }}> your favorite</Text> styles.
           </Text>
           <Text style={styles.descriptionText}>
-            Welcome to the dynamic dance school app and elevate your dance journey
-            with passion. 
+            Welcome to the dynamic dance school app and elevate your dance
+            journey with passion.
           </Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleSignIn}>
             <Text style={styles.buttonText}>Join now</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.btnAccount} onPress={handleSignIn}>

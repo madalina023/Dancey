@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-expo";
-import { View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Button,
+  Alert,
+} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
-
 import Colors from "@/constants/Colors";
 import GlobalAPI from "@/utils/GlobalAPI";
-import { Alert } from "react-native";
 import { client } from "@/utils/KindeConfig";
+
 function ConfirmCheckInPage() {
   const navigation = useNavigation();
   const [user, setUser] = useState();
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState();
+
   useEffect(() => {
     getUserData();
   }, []);
+
   const getUserData = async () => {
     const user = await client.getUserDetails();
     setUser(user);
   };
 
-  const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,7 +62,6 @@ function ConfirmCheckInPage() {
 
     fetchData();
   }, []);
-
   const handleConfirmCheckIn = async () => {
     if (!selectedEvent) {
       alert("Please select an event to check in.");
@@ -69,31 +76,73 @@ function ConfirmCheckInPage() {
     const userEmail = user.email;
     const currentDate = new Date().toISOString().split("T")[0]; // Formats to "YYYY-MM-DD"
 
-    // Check if the user is already checked in for the selected event
-    const isCheckedIn = await GlobalAPI.checkUserCheckIn(
-      selectedEvent,
-      currentDate,
-      userEmail
-    );
+    try {
+      // Fetch already checked-in events for the user
+      const checkedInEvents = await GlobalAPI.getUserCheckIns(userEmail);
 
-    if (isCheckedIn) {
-      Alert.alert(
-        "Check-In Error",
-        "You are already checked in for this event today.",
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("index"), // Replace 'Home' with the actual route name of your home page
-          },
-        ]
+      // Check if the selected event time overlaps with any already checked-in event
+      const selectedEventDetails = events.find(
+        (event) => event.id === selectedEvent
       );
-    } else {
+      const selectedEventStart = new Date(
+        `${currentDate}T${selectedEventDetails.startTime}`
+      );
+      const selectedEventEnd = new Date(
+        `${currentDate}T${selectedEventDetails.endTime}`
+      );
+
+      let isSameEventToday = false;
+      let isOverlap = false;
+
+      checkedInEvents.forEach((event) => {
+        const eventStart = new Date(
+          `${event.date}T${event.calendar.startTime}`
+        );
+        const eventEnd = new Date(`${event.date}T${event.calendar.endTime}`);
+
+        if (selectedEvent === event.calendar.id && currentDate === event.date) {
+          isSameEventToday = true;
+        }
+
+        if (selectedEventStart < eventEnd && selectedEventEnd > eventStart) {
+          isOverlap = true;
+        }
+      });
+
+      if (isSameEventToday) {
+        Alert.alert(
+          "Check-In Error",
+          "You are already checked in for this event today.",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("index"), // Replace 'Home' with the actual route name of your home page
+            },
+          ]
+        );
+        return;
+      }
+
+      if (isOverlap) {
+        Alert.alert(
+          "Check-In Error",
+          "You are already checked in for another event at the same time.",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("index"), // Replace 'Home' with the actual route name of your home page
+            },
+          ]
+        );
+        return;
+      }
+
       try {
-        // Make sure you are passing just the selected event's ID, not an object
+        // Check in the user for the selected event
         const checkInData = await GlobalAPI.checkInForClass(
           userName,
           userEmail,
-          selectedEvent, // Assuming this is just the ID string, not an object
+          selectedEvent,
           currentDate
         );
         Alert.alert(
@@ -112,6 +161,9 @@ function ConfirmCheckInPage() {
         console.error("Failed to check in:", error);
         Alert.alert("Check-In Error", "Failed to check in. Please try again.");
       }
+    } catch (error) {
+      console.error("Failed to fetch user check-ins or check-in:", error);
+      Alert.alert("Check-In Error", "Failed to check in. Please try again.");
     }
   };
 

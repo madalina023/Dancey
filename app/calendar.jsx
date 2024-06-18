@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, memo } from "react";
 import { View, TouchableOpacity, Text } from "react-native";
 import { Agenda } from "react-native-calendars";
-import { Card, Avatar } from "react-native-paper";
+import { Card } from "react-native-paper";
 import GlobalAPI from "@/utils/GlobalAPI";
-import Colors from "@/constants/Colors"
+import Colors from "@/constants/Colors";
 
 const timeToString = (time) => {
   const date = new Date(time);
@@ -12,6 +12,8 @@ const timeToString = (time) => {
 
 const CalendarScreen = () => {
   const [items, setItems] = useState({});
+  const [selectedDate, setSelectedDate] = useState(timeToString(new Date()));
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -24,10 +26,18 @@ const CalendarScreen = () => {
           currentDate.setDate(1); // Start at the first of the month
 
           while (currentDate.getMonth() === currentMonth) {
-            const dayName = currentDate.toLocaleDateString("en-US", {
-              weekday: "long",
-            });
-            if (dayName.toLowerCase() === dayOfWeek.toLowerCase()) {
+            const dayName = currentDate
+              .toLocaleDateString("en-US", {
+                weekday: "long",
+              })
+              .toLowerCase();
+
+            // Debugging statement for current dayName
+            console.log(
+              `Checking date: ${currentDate}, dayName: ${dayName}, target dayOfWeek: ${dayOfWeek}`
+            );
+
+            if (dayName === dayOfWeek.toLowerCase()) {
               const dateString = timeToString(currentDate);
               newItems[dateString] = newItems[dateString] || [];
 
@@ -47,6 +57,11 @@ const CalendarScreen = () => {
                           .join(", ")}`
                       : "";
 
+                  // Debugging statement for trainers
+                  console.log(
+                    `Event: ${event.level}, Trainers: ${trainerNames}`
+                  );
+
                   // Including event.level in the name property
                   newItems[dateString].push({
                     name: `${danceStyle.name} class ${trainerNames} (${event.level})`, // Level name added here
@@ -64,9 +79,11 @@ const CalendarScreen = () => {
 
         // Loop through all events and add them based on their dayOfWeek and level
         eventResult.forEach((event) => {
+          console.log(`Adding event: ${event.dayOfWeek}`);
           addEventsOnDayOfWeek(event.dayOfWeek, [event]);
         });
 
+        console.log("New items: ", newItems); // Debugging statement to check items
         setItems(newItems);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -76,7 +93,11 @@ const CalendarScreen = () => {
     fetchEvents();
   }, []);
 
-  const renderEmptyData = () => {
+  useEffect(() => {
+    console.log("Items:", items); // Debugging statement to check items
+  }, [items]);
+
+  const renderEmptyData = useCallback(() => {
     return (
       <View style={{ alignItems: "center", marginTop: 20 }}>
         <Text style={{ fontSize: 18, color: "#666" }}>
@@ -84,9 +105,14 @@ const CalendarScreen = () => {
         </Text>
       </View>
     );
-  };
-  const renderItem = (item) => {
-    return (<View>
+  }, []);
+
+  const RenderItem = memo(({ item }) => {
+    if (!item) {
+      return null; // Add this check to ensure item is not undefined
+    }
+
+    return (
       <TouchableOpacity style={{ marginRight: 10, marginTop: 17 }}>
         <Card>
           <Card.Content>
@@ -106,23 +132,29 @@ const CalendarScreen = () => {
             </View>
           </Card.Content>
         </Card>
-      </TouchableOpacity></View>
+      </TouchableOpacity>
     );
+  });
+
+  const filterItemsForSelectedDate = () => {
+    return { [selectedDate]: items[selectedDate] || [] };
   };
 
   return (
-    <View style={{ flex: 1 , marginTop:40}}>
-      <Agenda 
-        items={items}
-        loadItemsForMonth={(day) => {}}
-        selected={timeToString(new Date())}
-        renderItem={renderItem}
+    <View style={{ flex: 1, marginTop: 40 }}>
+      <Agenda
+        items={filterItemsForSelectedDate()}
+        selected={selectedDate}
+        renderItem={(item) => <RenderItem item={item} />}
         renderEmptyData={renderEmptyData}
+        onDayPress={(day) => {
+          setSelectedDate(timeToString(day.timestamp));
+        }}
         theme={{
           todayBackgroundColor: Colors.PRIMARY,
           agendaTodayColor: Colors.PRIMARY,
           dotColor: Colors.PRIMARY,
-          selectedDayBackgroundColor: Colors.PRIMARY
+          selectedDayBackgroundColor: Colors.PRIMARY,
         }}
       />
     </View>

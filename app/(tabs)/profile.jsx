@@ -1,5 +1,12 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import React, { useState ,useEffect} from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-expo";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -10,23 +17,28 @@ import { useClerk } from "@clerk/clerk-expo";
 import { client } from "@/utils/KindeConfig";
 import { router } from "expo-router";
 import services from "@/utils/services";
+
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const [user, setUser] = useState();
-    useEffect(() => {
-      getUserData();
-    }, []);
-    const getUserData = async () => {
-      const user = await client.getUserDetails();
-      setUser(user);
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
+  const getUserData = async () => {
+    const user = await client.getUserDetails();
+    setUser(user);
   };
+
   const handleLogout = async () => {
     const loggedOut = await client.logout();
-    if (loggedOut) { 
-      await services.storeData('login', 'false');
-      router.replace('/login');
+    if (loggedOut) {
+      await services.storeData("login", "false");
+      router.replace("/login");
     }
-  }
+  };
+
   const profileMenu = [
     {
       id: 1,
@@ -55,10 +67,16 @@ export default function ProfileScreen() {
     },
     {
       id: 6,
+      name: "AI Chat",
+      icon: "logo-wechat",
+    },
+    {
+      id: 7,
       name: "Logout",
       icon: "log-out",
     },
-  ]; 
+  ];
+
   const handlePress = (item) => {
     switch (item.name) {
       case "Home":
@@ -80,88 +98,95 @@ export default function ProfileScreen() {
       case "Recommendations":
         navigation.navigate("recommendations");
         break;
+      case "AI Chat":
+        navigation.navigate("aichat");
+        break;
       case "Logout":
         handleLogout();
-
         break;
       default:
         console.log("Default case");
     }
   };
+
   return (
-    <View>
-      <View
-        style={{
-          backgroundColor: Colors.PRIMARY_OPACITY,
-        }}
-      >
-        <Text
+    <ScrollView>
+      <View>
+        <View
           style={{
-            marginTop: 30,
-            paddingTop: 10,
-            paddingLeft: 10,
-            fontFamily: "Lato-Bold",
-            fontSize: 26,
-            fontWeight: "bold",
-            color: Colors.WHITE,
+            backgroundColor: Colors.PRIMARY_OPACITY,
           }}
         >
-          Profile
-        </Text>
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: user?.picture }}
-            style={{ width: 90, height: 90, borderRadius: 90 }}
-          />
           <Text
             style={{
-              fontFamily: "Lato-Regular",
+              marginTop: 30,
+              paddingTop: 10,
+              paddingLeft: 10,
+              fontFamily: "Lato-Bold",
               fontSize: 26,
-              marginTop: 10,
+              fontWeight: "bold",
               color: Colors.WHITE,
             }}
           >
-            {user?.given_name}
+            Profile
           </Text>
-          <Text
-            style={{
-              fontFamily: "Lato-Regular",
-              fontSize: 16,
-              marginTop: 10,
-              color: Colors.WHITE,
-            }}
-          >
-            {user?.email}
-          </Text>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: user?.picture }}
+              style={{ width: 90, height: 90, borderRadius: 90 }}
+            />
+            <Text
+              style={{
+                fontFamily: "Lato-Regular",
+                fontSize: 26,
+                marginTop: 10,
+                color: Colors.WHITE,
+              }}
+            >
+              {user?.given_name}
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Lato-Regular",
+                fontSize: 16,
+                marginTop: 10,
+                color: Colors.WHITE,
+              }}
+            >
+              {user?.email}
+            </Text>
+          </View>
+        </View>
+        <View style={{ paddingTop: 60 }}>
+          <FlatList
+            data={profileMenu}
+            keyExtractor={(item) => item.id.toString()} // Add keyExtractor for item uniqueness
+            scrollEnabled={false} // Disable FlatList scrolling
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                  marginBottom: 40,
+                  paddingHorizontal: 30,
+                }}
+                onPress={() => handlePress(item)} // Use handlePress here
+              >
+                <Ionicons name={item.icon} size={35} color={Colors.PRIMARY} />
+                <Text style={{ fontFamily: "Lato-Regular", fontSize: 20 }}>
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
       </View>
-      <View style={{ paddingTop: 60 }}>
-        <FlatList
-          data={profileMenu}
-          keyExtractor={(item) => item.id.toString()} // Add keyExtractor for item uniqueness
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: 40,
-                paddingHorizontal: 30,
-              }}
-              onPress={() => handlePress(item)} // Use handlePress here
-            >
-              <Ionicons name={item.icon} size={35} color={Colors.PRIMARY} />
-              <Text style={{ fontFamily: "Lato-Regular", fontSize: 20 }}>
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-    </View>
+    </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   imageContainer: {
     display: "flex",

@@ -78,70 +78,67 @@ const getTrainers = async () => {
 };
 
 const getTrainersListByStyle = async (danceStyle) => {
-  const query =
-    gql`
-  query getTrainerByStyle {
-    trainers(where: {danceStyles_some: {name: "` +
-    danceStyle +
-    `"}}) {
-      id
-      name
-      contact
-      danceStyles {
+  const query = gql`
+    query getTrainerByStyle($danceStyle: String!) {
+      trainers(where: { danceStyles_some: { name: $danceStyle } }) {
+        id
         name
+        contact
+        danceStyles {
+          name
+        }
+        about
+        images {
+          url
+        }
+        experience
       }
-      about
-      images {
-        url
-      }
-      experience
     }
-  }
   `;
-  const result = await request(MASTER_URL, query);
+  const variables = { danceStyle };
+  const result = await request(MASTER_URL, query, variables);
   return result;
-};
-const createBooking = async (data) => {
-  const mutationQuery =
-    gql`
-  mutation createBooking {
-  createBooking(
-    data: {
-      bookingStatus: "Booked", 
-      trainer: 
-        {connect: {id: "` +
-    data.trainerID +
-    `"}}, 
-        date: "` +
-    data.date +
-    `", 
-        time: "` +
-    data.time +
-    `", 
-        userEmail: "` +
-    data.userEmail +
-    `", 
-        userName: "` +
-    data.userName +
-    `"}
-  ) {
-    id
-  }
-  publishManyBookings(to:PUBLISHED)
-  {count}
-}
-`;
-  const result = await request(MASTER_URL, mutationQuery);
+};const createBooking = async (data) => {
+  const mutationQuery = gql`
+    mutation createBooking(
+      $trainerID: ID!
+      $date: String!
+      $time: String!
+      $userEmail: String!
+      $userName: String!
+    ) {
+      createBooking(
+        data: {
+          bookingStatus: "Booked"
+          trainer: { connect: { id: $trainerID } }
+          date: $date
+          time: $time
+          userEmail: $userEmail
+          userName: $userName
+        }
+      ) {
+        id
+      }
+      publishManyBookings(to: PUBLISHED) {
+        count
+      }
+    }
+  `;
+  const variables = {
+    trainerID: data.trainerID,
+    date: data.date,
+    time: data.time,
+    userEmail: data.userEmail,
+    userName: data.userName,
+  };
+  const result = await request(MASTER_URL, mutationQuery, variables);
   return result;
 };
 
-const getUserBookings = async (userEmail, trainerID) => {
-  const query =
-    gql`
-    query GetUserBookings {
-      bookings(orderBy: updatedAt_DESC, where: {userEmail: "` +
-    userEmail +
-    `"}) {
+const getUserBookings = async (userEmail) => {
+  const query = gql`
+    query GetUserBookings($userEmail: String!) {
+      bookings(orderBy: updatedAt_DESC, where: { userEmail: $userEmail }) {
         time
         userEmail
         userName
@@ -164,12 +161,12 @@ const getUserBookings = async (userEmail, trainerID) => {
       }
     }
   `;
-  const result = await request(MASTER_URL, query);
-
+  const variables = { userEmail };
+  const result = await request(MASTER_URL, query, variables);
   return result;
 };
-// This is a conceptual example. Adjust it according to your actual API's capabilities
-const getBookingsByDateTime = async (date, time) => {
+
+ const getBookingsByDateTime = async (date, time) => {
   const query = gql`
     query GetBookingsByDateTime($date: String!, $time: String!) {
       bookings(where: { date: $date, time: $time }) {
@@ -209,8 +206,7 @@ export const updateBookingStatus = async (bookingId, status) => {
     console.error("Failed to update booking status:", error);
     throw new Error("Failed to update booking status.");
   }
-};
-const cancelBooking = async (bookingId) => {
+};const cancelBooking = async (bookingId) => {
   const DELETE_BOOKING = gql`
     mutation DeleteBooking($id: ID!) {
       deleteBooking(where: { id: $id }) {
@@ -233,8 +229,8 @@ const cancelBooking = async (bookingId) => {
 
 const getSubscription = async (userEmail) => {
   const query = gql`
-    query getSubscription {
-      subscriptions {
+    query getSubscription($userEmail: String!) {
+      subscriptions(where: { userEmail: $userEmail }) {
         id
         image {
           url
@@ -244,21 +240,29 @@ const getSubscription = async (userEmail) => {
       }
     }
   `;
-  const result = await request(MASTER_URL, query);
+  const variables = { userEmail };
+  const result = await request(MASTER_URL, query, variables);
   return result;
 };
 
 const createActiveSubscription = async (subscriptionData) => {
   const mutation = gql`
-    mutation createActiveSubscription {
+    mutation createActiveSubscription(
+      $subscriptionID: ID!
+      $date: String!
+      $time: String!
+      $statusSubscription: String!
+      $userName: String!
+      $userEmail: String!
+    ) {
       createActiveSubscription(
-        data: { 
-          subscriptions: { connect: { id: "${subscriptionData.subscriptionID}" } }, 
-          date: "${subscriptionData.date}", 
-          time: "${subscriptionData.time}",
-          statusSubscription: "${subscriptionData.statusSubscription}" ,
-          userName:"${subscriptionData.userName}",
-          userEmail:"${subscriptionData.userEmail}"
+        data: {
+          subscriptions: { connect: { id: $subscriptionID } }
+          date: $date
+          time: $time
+          statusSubscription: $statusSubscription
+          userName: $userName
+          userEmail: $userEmail
         }
       ) {
         id
@@ -268,10 +272,18 @@ const createActiveSubscription = async (subscriptionData) => {
       }
     }
   `;
-  // Execute the mutation using your GraphQL client
-  const result = await request(MASTER_URL, mutation);
+  const variables = {
+    subscriptionID: subscriptionData.subscriptionID,
+    date: subscriptionData.date,
+    time: subscriptionData.time,
+    statusSubscription: subscriptionData.statusSubscription,
+    userName: subscriptionData.userName,
+    userEmail: subscriptionData.userEmail,
+  };
+  const result = await request(MASTER_URL, mutation, variables);
   return result;
 };
+
 
 const getActiveSubscription = async (userEmail) => {
   const query = gql`

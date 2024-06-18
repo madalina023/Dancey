@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   backBtnContainer: {
     padding: 20,
     position: "absolute",
-    zIndex: 10,
+    zIndex: 10,marginTop:30
   },
   container: {
     padding: 20,

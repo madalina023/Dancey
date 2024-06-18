@@ -8,7 +8,7 @@ import { client } from "@/utils/KindeConfig";
 export default function History() {
   const [checkIns, setCheckIns] = useState([]);
   const [user, setUser] = useState(null);
-  const [remainingSessions, setRemainingSessions] = useState(0);
+  const [remainingSessions, setRemainingSessions] = useState(null);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -42,26 +42,31 @@ export default function History() {
               subscriptionDetails.activeSubscriptions[0];
             const { subscriptions, date: subscriptionStartDate } =
               activeSubscription;
-            const totalSessions = subscriptions[0].name.includes("12")
-              ? 12
-              : subscriptions[0].name.includes("8")
-              ? 8
-              : subscriptions[0].name.includes("4")
-              ? 4
-              : 0;
 
-            console.log("Total Sessions:", totalSessions); // Debugging statement
-            console.log("Subscription Start Date:", subscriptionStartDate); // Debugging statement
+             if (subscriptions[0].name.includes("Full time")) {
+              setRemainingSessions("Full time");
+            } else {
+              const totalSessions = subscriptions[0].name.includes("12")
+                ? 12
+                : subscriptions[0].name.includes("8")
+                ? 8
+                : subscriptions[0].name.includes("4")
+                ? 4
+                : 0;
 
-            // Filter check-ins that occurred after the subscription start date
-            const relevantCheckIns = userCheckIns.filter(
-              (checkIn) =>
-                new Date(checkIn.date) >= new Date(subscriptionStartDate)
-            );
-            console.log("Relevant Check-Ins:", relevantCheckIns); // Debugging statement
+              console.log("Total Sessions:", totalSessions); // Debugging statement
+              console.log("Subscription Start Date:", subscriptionStartDate); // Debugging statement
 
-            const remaining = totalSessions - relevantCheckIns.length;
-            setRemainingSessions(remaining);
+              // Filter check-ins that occurred after the subscription start date
+              const relevantCheckIns = userCheckIns.filter(
+                (checkIn) =>
+                  new Date(checkIn.date) >= new Date(subscriptionStartDate)
+              );
+              console.log("Relevant Check-Ins:", relevantCheckIns); // Debugging statement
+
+              const remaining = totalSessions - relevantCheckIns.length;
+              setRemainingSessions(remaining);
+            }
           } else {
             console.warn("No active subscription found for user.");
           }
@@ -76,6 +81,7 @@ export default function History() {
 
     fetchAndCheckCheckIns();
   }, [user]);
+
   return (
     <View style={styles.container}>
       <PageHeading title="History" />
@@ -105,7 +111,9 @@ export default function History() {
       />
       <View style={styles.footer}>
         <Text style={styles.remainingText}>
-          You have {remainingSessions} sessions remaining.
+          {remainingSessions === "Full time"
+            ? "You have a Full-time subscription."
+            : `You have ${remainingSessions} sessions remaining.`}
         </Text>
       </View>
     </View>

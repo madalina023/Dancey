@@ -12,7 +12,6 @@ import Colors from "../constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/core";
 import {
-  CardForm,
   CardField,
   StripeProvider,
   useConfirmPayment,
@@ -21,24 +20,22 @@ import { useUser } from "@clerk/clerk-expo";
 import moment from "moment";
 import GlobalAPI from "../utils/GlobalAPI";
 import { client } from "@/utils/KindeConfig";
-
-const API_URL = "http://192.168.1.134:5000";
-const PUBLISHABLE_KEY =
-  "pk_test_51OuYOCRqRmTxzPBOLwxDwFgkoiNZdsScBfbrXtbWc5PI3IjxfWwdtjT2wEk2iQ1Q21Updvj7xwshTmGHMOnp9Ygh00W4I3bihS";
+import { API_URL, PUBLISHABLE_KEY } from "@env";
 
 export default function Payment({}) {
   const navigation = useNavigation();
   const route = useRoute();
   const price = route.params?.price;
-
   const subscriptionID = route.params?.subscriptionID;
-  const [email, setEmail] = useState();
-  const [cardDetails, setCardDetails] = useState();
+  const [email, setEmail] = useState("");
+  const [cardDetails, setCardDetails] = useState({});
   const { confirmPayment, loading } = useConfirmPayment();
   const [user, setUser] = useState();
+
   useEffect(() => {
     getUserData();
   }, []);
+
   const getUserData = async () => {
     const user = await client.getUserDetails();
     setUser(user);
@@ -106,12 +103,16 @@ export default function Payment({}) {
     }
 
     const { expiryMonth, expiryYear } = cardDetails;
-    if (!validateCardExpiry(expiryMonth, expiryYear)) {
-      Alert.alert(
-        "Invalid Expiry Date",
-        "The expiry date must be within the next 5 years."
-      );
-      return;
+    if (expiryMonth && expiryYear) {
+      const expiryDate = moment(`${expiryYear}-${expiryMonth}`, "YYYY-MM");
+      const maxDate = moment().add(5, "years");
+      if (expiryDate.isAfter(maxDate)) {
+        Alert.alert(
+          "Invalid Expiry Date",
+          "The expiry date must be within the next 5 years."
+        );
+        return;
+      }
     }
 
     const billingDetails = { email: email };
@@ -155,7 +156,7 @@ export default function Payment({}) {
         date: currentDate,
         time: currentTime,
         statusSubscription: "Active",
-        userName: user.given_name + " " + user.family_name,
+        userName: user.given_name,
         userEmail: user.email,
       };
 
@@ -164,10 +165,6 @@ export default function Payment({}) {
           subscriptionData
         );
         console.log("Active subscription created successfully:", result);
-        // navigation.navigate("payment", {
-        //   subscriptionID: subscriptionID,
-        //   price: 20000,
-        // });
       } catch (error) {
         console.error("Error creating active subscription:", error);
         Alert.alert("Subscription Error", "Failed to activate subscription.");

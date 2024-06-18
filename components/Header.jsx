@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import { client } from "@/utils/KindeConfig";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/core";
+
 export default function Header() {
+  const navigation = useNavigation();
   const [user, setUser] = useState();
   useEffect(() => {
     getUserData();
@@ -11,6 +14,9 @@ export default function Header() {
   const getUserData = async () => {
     const user = await client.getUserDetails();
     setUser(user);
+  };
+  const goToNotifications = async () => {
+    navigation.navigate("recommendations");
   };
   return (
     <View style={styles.container}>
@@ -32,20 +38,27 @@ export default function Header() {
             </Text>
           </View>
         </View>
-        <Ionicons name="notifications" size={24} color="black" />
+        <Ionicons
+          name="notifications"
+          size={24}
+          color="black"
+          onPress={goToNotifications}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     padding: 30,
     backgroundColor: Colors.PRIMARY_OPACITY,
     borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,marginBottom:20
+    borderBottomRightRadius: 30,
+    marginBottom: 20,
   },
-  profileMainContainer: {marginTop:30,
+  profileMainContainer: {
+    marginTop: 30,
     display: "flex",
     flexDirection: "row",
     alignContent: "center",
@@ -58,7 +71,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
 
-  
   userImage: {
     width: 40,
     height: 40,

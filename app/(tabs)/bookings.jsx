@@ -21,14 +21,12 @@ export default function BookingScreen() {
 
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    // Fetch and update bookings
+  useEffect(() => { 
     if (user && isFocused) {
       fetchAndUpdateBookings();
     }
   }, [user, isFocused]);
-
-  // Adjusted function to include time parsing and comparison
+ 
   const parseDateTimeFromString = (dateStr, timeStr) => {
     const months = {
       Jan: "01",
@@ -46,7 +44,7 @@ export default function BookingScreen() {
     };
 
     const dateParts = dateStr.split("-");
-    const timeParts = timeStr.split(/[:\s]/); // Split by colon and potential space for AM/PM
+    const timeParts = timeStr.split(/[:\s]/); 
 
     if (dateParts.length === 3 && timeParts.length >= 2) {
       const year = dateParts[2];
@@ -76,21 +74,20 @@ export default function BookingScreen() {
 
     throw new Error("Invalid date or time string format");
   };
-
-  // Function to determine if the booking is in progress
+ 
   const isBookingInProgress = (bookingDate, currentTime) => {
     const startTime = bookingDate;
-    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // Add one hour to start time
+    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); 
     return currentTime >= startTime && currentTime < endTime;
   };
 
-  // Function to fetch bookings
+ 
   const getUserBookings = async () => {
     if (user?.email) {
       const response = await GlobalAPI.getUserBookings(
         user.email
       );
-      console.log("Response from server:", response); // Log to check the response
+      console.log("Response from server:", response);  
       return response;
     }
   };
@@ -99,33 +96,28 @@ export default function BookingScreen() {
     try {
       const response = await getUserBookings();
       let now = new Date();
-      console.log("Fetched bookings:", response.bookings || []); // Debugging
-      setBookingList(response.bookings);
-      // Iterate over bookings to update their statuses based on the current time
+      console.log("Fetched bookings:", response.bookings || []); 
+      setBookingList(response.bookings); 
       const updatedBookings = response.bookings.map((booking) => {
         const bookingDateTime = parseDateTimeFromString(
           booking.date,
           booking.time
         );
 
-        // Check if the booking is in progress
-        if (isBookingInProgress(bookingDateTime, now)) {
+         if (isBookingInProgress(bookingDateTime, now)) {
           return { ...booking, bookingStatus: "In Progress" };
         }
-        // Check if the booking date and time are in the past and mark as "Completed" if so
-        else if (
+         else if (
           bookingDateTime < now &&
           booking.bookingStatus !== "Completed"
         ) {
-          // This assumes you want to automatically mark past bookings as "Completed"
-          // You might want to actually call an API endpoint here to update the booking status in your database
           return { ...booking, bookingStatus: "Completed" };
         } else {
-          return booking; // No change to booking status
+          return booking;  
         }
       });
 
-      // Directly set the updated bookings to state without re-fetching from the server
+      
       setBookingList(updatedBookings);
     } catch (error) {
       console.error("Error during booking update/fetch:", error);
@@ -135,19 +127,18 @@ export default function BookingScreen() {
   };
   const cancelBooking = async (bookingId) => {
     try {
-      await GlobalAPI.cancelBooking(bookingId); // Adjust this line based on your actual API call
+      await GlobalAPI.cancelBooking(bookingId);  
       Alert.alert(
         "Booking Canceled",
         "Your booking has been successfully canceled."
       );
-      fetchAndUpdateBookings(); // Refresh the bookings list
+      fetchAndUpdateBookings(); 
     } catch (error) {
       console.error("Error canceling booking:", error);
       Alert.alert("Cancellation Error", "Failed to cancel booking.");
     }
   };
-
-  // Render function
+ 
   return (
     <View style={{ padding: 20, margintop: 30 }}>
       <Text
