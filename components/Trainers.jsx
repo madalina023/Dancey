@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   FlatList,
   Modal,
   TouchableOpacity,
@@ -97,8 +96,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
-    width: "90%", // Smaller width
-    maxHeight: "80%", // Limit height
+    width: "90%", 
+    maxHeight: "80%", 
   },
   closeButton: {
     marginTop: 10,

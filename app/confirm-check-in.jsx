@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from "@clerk/clerk-expo";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Button,
   Alert,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
@@ -33,7 +31,6 @@ function ConfirmCheckInPage() {
     const fetchData = async () => {
       try {
         const eventsToday = await GlobalAPI.getCalendarEventsWithDetails();
-        console.log("Fetched events:", eventsToday);
 
         const dayNames = [
           "Sunday",
@@ -44,15 +41,11 @@ function ConfirmCheckInPage() {
           "Friday",
           "Saturday",
         ];
-        const todayDayOfWeek = dayNames[new Date().getDay()]; // This will give you the full day name
+        const todayDayOfWeek = dayNames[new Date().getDay()]; 
 
         const filteredEvents = eventsToday.filter(
-          (event) => event.dayOfWeek === todayDayOfWeek // Use the full string name to filter
+          (event) => event.dayOfWeek === todayDayOfWeek 
         );
-
-        console.log("Today's day of the week:", todayDayOfWeek);
-        console.log("Events fetched:", eventsToday);
-        console.log("Filtered events:", filteredEvents);
 
         setEvents(filteredEvents);
       } catch (error) {
@@ -74,13 +67,11 @@ function ConfirmCheckInPage() {
 
     const userName = user.given_name + " " + user.family_name;
     const userEmail = user.email;
-    const currentDate = new Date().toISOString().split("T")[0]; // Formats to "YYYY-MM-DD"
+    const currentDate = new Date().toISOString().split("T")[0]; 
 
     try {
-      // Fetch already checked-in events for the user
       const checkedInEvents = await GlobalAPI.getUserCheckIns(userEmail);
 
-      // Check if the selected event time overlaps with any already checked-in event
       const selectedEventDetails = events.find(
         (event) => event.id === selectedEvent
       );
@@ -116,7 +107,7 @@ function ConfirmCheckInPage() {
           [
             {
               text: "OK",
-              onPress: () => navigation.navigate("index"), // Replace 'Home' with the actual route name of your home page
+              onPress: () => navigation.navigate("index"), 
             },
           ]
         );
@@ -130,7 +121,7 @@ function ConfirmCheckInPage() {
           [
             {
               text: "OK",
-              onPress: () => navigation.navigate("index"), // Replace 'Home' with the actual route name of your home page
+              onPress: () => navigation.navigate("index"), 
             },
           ]
         );
@@ -138,7 +129,7 @@ function ConfirmCheckInPage() {
       }
 
       try {
-        // Check in the user for the selected event
+     
         const checkInData = await GlobalAPI.checkInForClass(
           userName,
           userEmail,
@@ -153,7 +144,7 @@ function ConfirmCheckInPage() {
           [
             {
               text: "OK",
-              onPress: () => navigation.navigate("index"), // Replace 'Home' with the actual route name of your home page
+              onPress: () => navigation.navigate("index"),
             },
           ]
         );
@@ -203,15 +194,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f9f9f9", // Light background color
+    backgroundColor: "#f9f9f9", 
   },
   button: {
     backgroundColor: Colors.PRIMARY,
-    paddingVertical: 12, // Increased padding for a bigger button
+    paddingVertical: 12, 
     paddingHorizontal: 30,
-    borderRadius: 25, // Rounded corners
+    borderRadius: 25, 
     marginTop: 20,
-    shadowColor: "#000", // Shadow for depth
+    shadowColor: "#000", 
     shadowOffset: {
       width: 0,
       height: 2,
@@ -222,13 +213,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 16, // Larger font size
-    fontWeight: "bold", // Bold font weight
+    fontSize: 16, 
+    fontWeight: "bold", 
   },
 });
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    fontSize: 16, // Increased font size
+    fontSize: 16,
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
@@ -236,8 +227,8 @@ const pickerSelectStyles = StyleSheet.create({
     borderRadius: 8,
     color: "black",
     paddingRight: 30,
-    backgroundColor: "white", // Background color for the picker
-    marginTop: 10, // Add space above the picker
+    backgroundColor: "white", 
+    marginTop: 10, 
   },
   inputAndroid: {
     fontSize: 16,
@@ -251,7 +242,6 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: "white",
     marginTop: 10,
   },
-  // Include icon container for better alignment if necessary
   iconContainer: {
     top: 5,
     right: 15,

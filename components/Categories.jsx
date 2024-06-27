@@ -12,13 +12,13 @@ import GlobalAPI from "@/utils/GlobalAPI";
 import Colors from "@/constants/Colors";
 import Heading from "./Heading";
 import { useNavigation } from "@react-navigation/core";
-import { Link, useRouter } from "expo-router";
+
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
-  const router = useRouter();
+
   useEffect(() => {
     getCategories();
   }, []);
@@ -26,11 +26,8 @@ export default function Categories() {
   const getCategories = async () => {
     try {
       const resp = await GlobalAPI.getCategories();
-      console.log("Categories response:", resp);
       if (resp && resp.categories) {
         setCategories(resp.categories);
-      } else {
-        console.log("No categories found");
       }
     } catch (error) {
       console.error("Failed to fetch categories:", error);

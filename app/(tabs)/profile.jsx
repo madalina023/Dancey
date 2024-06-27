@@ -7,13 +7,11 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useUser } from "@clerk/clerk-expo";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Linking } from "react-native";
-import { useClerk } from "@clerk/clerk-expo";
 import { client } from "@/utils/KindeConfig";
 import { router } from "expo-router";
 import services from "@/utils/services";
@@ -160,8 +158,8 @@ export default function ProfileScreen() {
         <View style={{ paddingTop: 60 }}>
           <FlatList
             data={profileMenu}
-            keyExtractor={(item) => item.id.toString()} // Add keyExtractor for item uniqueness
-            scrollEnabled={false} // Disable FlatList scrolling
+            keyExtractor={(item) => item.id.toString()} 
+            scrollEnabled={false} 
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={{
@@ -172,7 +170,7 @@ export default function ProfileScreen() {
                   marginBottom: 40,
                   paddingHorizontal: 30,
                 }}
-                onPress={() => handlePress(item)} // Use handlePress here
+                onPress={() => handlePress(item)} 
               >
                 <Ionicons name={item.icon} size={35} color={Colors.PRIMARY} />
                 <Text style={{ fontFamily: "Lato-Regular", fontSize: 20 }}>

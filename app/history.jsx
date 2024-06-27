@@ -25,14 +25,10 @@ export default function History() {
           const userEmail = user.email;
           const userCheckIns = await GlobalAPI.getUserCheckIns(userEmail);
           setCheckIns(userCheckIns);
-
-          console.log("User Check-Ins:", userCheckIns); // Debugging statement
-
-          // Fetch subscription details
+         
           const subscriptionDetails = await GlobalAPI.getActiveSubscription(
             userEmail
-          );
-          console.log("Subscription Details:", subscriptionDetails); // Debugging statement
+          ); 
 
           if (
             subscriptionDetails.activeSubscriptions &&
@@ -54,15 +50,10 @@ export default function History() {
                 ? 4
                 : 0;
 
-              console.log("Total Sessions:", totalSessions); // Debugging statement
-              console.log("Subscription Start Date:", subscriptionStartDate); // Debugging statement
-
-              // Filter check-ins that occurred after the subscription start date
               const relevantCheckIns = userCheckIns.filter(
                 (checkIn) =>
                   new Date(checkIn.date) >= new Date(subscriptionStartDate)
               );
-              console.log("Relevant Check-Ins:", relevantCheckIns); // Debugging statement
 
               const remaining = totalSessions - relevantCheckIns.length;
               setRemainingSessions(remaining);

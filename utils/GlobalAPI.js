@@ -1,22 +1,5 @@
 import { request, gql } from "graphql-request";
-
-const MASTER_URL =
-  "https://api-eu-west-2.hygraph.com/v2/cltacnqry2dsn07uzspnwonu5/master";
-const getSlider = async () => {
-  const query = gql`
-    query GetSlider {
-      sliders {
-        id
-        name
-        image {
-          url
-        }
-      }
-    }
-  `;
-  const result = await request(MASTER_URL, query);
-  return result;
-};
+import { MASTER_URL } from "@env";
 
 const getCategories = async () => {
   const query = gql`
@@ -32,11 +15,26 @@ const getCategories = async () => {
   `;
    try {
     const result = await request(MASTER_URL, query);
-    console.log("Fetched Categories:", result);
     return result;
   } catch (error) {
     console.error("Error fetching categories:", error);
   }
+};
+
+const getSlider = async () => {
+  const query = gql`
+    query GetSlider {
+      sliders {
+        id
+        name
+        image {
+          url
+        }
+      }
+    }
+  `;
+  const result = await request(MASTER_URL, query);
+  return result;
 };
  
 const getDanceStyle = async () => {
@@ -184,9 +182,7 @@ const getUserBookings = async (userEmail) => {
 };
 
 export const updateBookingStatus = async (bookingId, status) => {
-  console.log(
-    `Attempting to update booking status for booking ID ${bookingId} to ${status}`
-  );
+
   const mutation = gql`
     mutation UpdateBookingStatus($id: ID!, $status: String!) {
       updateBooking(where: { id: $id }, data: { bookingStatus: $status }) {
@@ -200,7 +196,6 @@ export const updateBookingStatus = async (bookingId, status) => {
 
   try {
     const result = await request(MASTER_URL, mutation, variables);
-    console.log("Booking status updated:", result);
     return result;
   } catch (error) {
     console.error("Failed to update booking status:", error);
@@ -219,9 +214,7 @@ export const updateBookingStatus = async (bookingId, status) => {
     const variables = { id: bookingId };
     await request(MASTER_URL, DELETE_BOOKING, variables);
   } catch (error) {
-    console.log("Error canceling booking:", error);
 
-    // Extracting detailed error message if available
     const errorMessage =
       error.response?.errors?.[0]?.message || "Unknown error";
   }
@@ -305,8 +298,8 @@ const getActiveSubscription = async (userEmail) => {
       }
     }
   `;
-  const variables = { userEmail }; // Ensure this matches your server's expectations
-  const result = await request(MASTER_URL, query, variables); // Passing variables correctly
+  const variables = { userEmail };
+  const result = await request(MASTER_URL, query, variables); 
   return result;
 };
 
@@ -349,7 +342,6 @@ const updateSubscriptionStatus = async (id, status) => {
       UPDATE_SUBSCRIPTION_STATUS,
       variables
     );
-    console.log(`Subscription status updated:`, result);
   } catch (error) {
     console.error(`Error updating subscription status:`, error);
   }
@@ -433,15 +425,14 @@ async function checkInForClass(userName, userEmail, calendarId) {
     }
   `;
 
-  // Get the current date and time in ISO 8601 format
   const currentDate = new Date().toISOString();
 
-  // Define the variables for the mutation including the current date
+  
   const variables = {
     userName,
     userEmail,
     calendarId,
-    date: currentDate, // Assuming your backend is expecting an ISO 8601 string for the date
+    date: currentDate,
   };
 
   try {
@@ -481,7 +472,6 @@ const checkUserCheckInQuery = gql`
     }
   }
 `;
-// Function to check user check-ins
 const checkUserCheckIn = async (calendarId, date, userEmail) => {
   const variables = {
     calendarId,
@@ -495,9 +485,7 @@ const checkUserCheckIn = async (calendarId, date, userEmail) => {
       checkUserCheckInQuery,
       variables
     );
-    console.log("Check-in query successful", response);
 
-    // Safely check if there are any check-ins
     return (
       Array.isArray(response.checkInForClasses) &&
       response.checkInForClasses.length > 0
@@ -536,8 +524,7 @@ const getUserCheckIns = async (userEmail) => {
 
   try {
     const response = await request(MASTER_URL, query, variables);
-    console.log("User check-ins fetched successfully", response);
-    return response.checkInForClasses; // Assuming this is the correct path in the response
+    return response.checkInForClasses; 
   } catch (error) {
     console.error("Error fetching user check-ins", error);
     throw new Error("Failed to fetch user check-ins.");

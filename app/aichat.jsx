@@ -19,19 +19,11 @@ export default function aichat() {
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, userMessage)
       );
+
       const messageText = userMessage.text.toLowerCase();
-      const keywords = [
-        "dance",
-        "music",
-        "dance style",
-        "training",
-        "moves",
-        "choreography",
-        "events",
-        "party",
-        "parties",
-        "latino",
-        "styles",
+
+      const keywords = ["dance", "music", "dance style", "training", "moves",
+        "choreography", "events", "party", "parties", "latino", "styles",
       ];
       if (!keywords.some((keyword) => messageText.includes(keyword))) {
         const botMessage = {
@@ -43,19 +35,21 @@ export default function aichat() {
             name: "Dance bot",
           },
         };
+
         setMessages((previousMessages) =>
           GiftedChat.append(previousMessages, botMessage)
         );
         return;
       }
+     
       const response = await axios.post(
         "https://api.openai.com/v1/completions",
         {
           prompt: `User asked: ${userMessage.text}`,
-          max_tokens: 600, // Reduced max_tokens
+          max_tokens: 600, 
           temperature: 0.2,
           n: 1,
-          model: "gpt-3.5-turbo-instruct", // Include the model parameter
+          model: "gpt-3.5-turbo-instruct",  
         },
         {
           headers: {
@@ -64,7 +58,7 @@ export default function aichat() {
           },
         }
       );
-      console.log(response.data);
+    
       const dance = response.data.choices[0].text.trim();
       const botMessage = {
         _id: new Date().getTime() + 1,
@@ -79,8 +73,6 @@ export default function aichat() {
         GiftedChat.append(previousMessages, botMessage)
       );
     } catch (err) {
-      console.log("error calling  ", err);
-      console.log(err.response);
       if (
         err.response?.status === 429 ||
         err.response?.data?.error?.code === "insufficient_quota"

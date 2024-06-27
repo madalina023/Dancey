@@ -1,8 +1,5 @@
 const express = require("express");
 const Stripe = require("stripe");
-const QRCode = require("qrcode");
-// const fs = require("fs"); // Uncomment if needed
-const path = require("path");
 const app = express();
 const port = 5000; 
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -10,7 +7,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const stripe = Stripe(SECRET_KEY, { apiVersion: "2023-10-16" });
 
 app.use(express.json());
-
+ 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

@@ -16,7 +16,6 @@ import {
   StripeProvider,
   useConfirmPayment,
 } from "@stripe/stripe-react-native";
-import { useUser } from "@clerk/clerk-expo";
 import moment from "moment";
 import GlobalAPI from "../utils/GlobalAPI";
 import { client } from "@/utils/KindeConfig";
@@ -41,29 +40,8 @@ export default function Payment({}) {
     setUser(user);
   };
 
-  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
-
-  useEffect(() => {
-    const fetchAndSetSubscriptions = async () => {
-      if (user) {
-        const userEmail = user?.email;
-        try {
-          const activeSubscriptions = await GlobalAPI.getActiveSubscription(
-            userEmail
-          );
-          console.log("Active subscriptions:", activeSubscriptions);
-          setActiveSubscriptions(activeSubscriptions.activeSubscriptions);
-        } catch (error) {
-          console.error("Failed to fetch active subscriptions:", error);
-        }
-      }
-    };
-    fetchAndSetSubscriptions();
-  }, [user]);
-
   const fetchPaymentIntentClientSecret = async () => {
     const url = `${API_URL}/create-payment-intent`;
-    console.log(`Attempting to fetch from URL: ${url}`);
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -79,21 +57,11 @@ export default function Payment({}) {
         throw new Error(`HTTP status ${response.status}`);
       }
       const json = await response.json();
-      console.log("Response JSON:", json);
       return json;
     } catch (e) {
       console.error("Fetch payment intent client secret failed:", e);
       return { error: e.message };
     }
-  };
-
-  const validateCardExpiry = (expiryMonth, expiryYear) => {
-    const currentYear = new Date().getFullYear();
-    const maxYear = currentYear + 5;
-    if (expiryYear > maxYear) {
-      return false;
-    }
-    return true;
   };
 
   const handlePayPress = async () => {
@@ -120,7 +88,6 @@ export default function Payment({}) {
     const { clientSecret, error } = await fetchPaymentIntentClientSecret();
 
     if (error) {
-      console.log("Unable to process payment:", error);
       Alert.alert("Payment Error", "Unable to process payment at this time.");
       return;
     }
@@ -134,7 +101,6 @@ export default function Payment({}) {
     );
 
     if (confirmError) {
-      console.log(`Payment confirmation error: ${confirmError.message}`);
       Alert.alert("Payment Error", confirmError.message);
       return;
     }
@@ -149,7 +115,6 @@ export default function Payment({}) {
 
     if (paymentIntent) {
       Alert.alert("Payment Successful", "Thank you for your payment!");
-      console.log("Payment successful:", paymentIntent);
       navigation.navigate("index");
       const subscriptionData = {
         subscriptionID: subscriptionID,
@@ -164,7 +129,6 @@ export default function Payment({}) {
         const result = await GlobalAPI.createActiveSubscription(
           subscriptionData
         );
-        console.log("Active subscription created successfully:", result);
       } catch (error) {
         console.error("Error creating active subscription:", error);
         Alert.alert("Subscription Error", "Failed to activate subscription.");
@@ -192,7 +156,7 @@ export default function Payment({}) {
               keyboardType="email-address"
               onChangeText={(text) => setEmail(text)}
               style={styles.input}
-              placeholderTextColor="#000" // Updated placeholder text color
+              placeholderTextColor="#000" 
             />
             <CardField
               postalCodeEnabled={true}
@@ -201,7 +165,7 @@ export default function Payment({}) {
               }}
               style={styles.card}
               cardStyle={{
-                textColor: "#000000", // Set the text color to black
+                textColor:Colors.BLACK, 
               }}
               onCardChange={(cardDetails) => {
                 setCardDetails(cardDetails);

@@ -10,7 +10,9 @@ npm-debug.*
 *.orig.*
 web-build/
 .env
-utils/
+KindeConfig
+services
+SupabaseConfig
 # macOS
 .DS_Store
 

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import { View, StyleSheet, Image, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import GlobalAPI from "@/utils/GlobalAPI";
 import Heading from "./Heading";

@@ -23,7 +23,7 @@ const CalendarScreen = () => {
         const addEventsOnDayOfWeek = (dayOfWeek, events) => {
           const currentDate = new Date();
           const currentMonth = currentDate.getMonth();
-          currentDate.setDate(1); // Start at the first of the month
+          currentDate.setDate(1); 
 
           while (currentDate.getMonth() === currentMonth) {
             const dayName = currentDate
@@ -31,11 +31,6 @@ const CalendarScreen = () => {
                 weekday: "long",
               })
               .toLowerCase();
-
-            // Debugging statement for current dayName
-            console.log(
-              `Checking date: ${currentDate}, dayName: ${dayName}, target dayOfWeek: ${dayOfWeek}`
-            );
 
             if (dayName === dayOfWeek.toLowerCase()) {
               const dateString = timeToString(currentDate);
@@ -57,15 +52,9 @@ const CalendarScreen = () => {
                           .join(", ")}`
                       : "";
 
-                  // Debugging statement for trainers
-                  console.log(
-                    `Event: ${event.level}, Trainers: ${trainerNames}`
-                  );
-
-                  // Including event.level in the name property
                   newItems[dateString].push({
-                    name: `${danceStyle.name} class ${trainerNames} (${event.level})`, // Level name added here
-                    height: 100, // Or your logic for height
+                    name: `${danceStyle.name} class ${trainerNames} (${event.level})`, 
+                    height: 100, 
                     startTime: event.startTime,
                     endTime: event.endTime,
                     level: event.level,
@@ -77,13 +66,10 @@ const CalendarScreen = () => {
           }
         };
 
-        // Loop through all events and add them based on their dayOfWeek and level
         eventResult.forEach((event) => {
-          console.log(`Adding event: ${event.dayOfWeek}`);
           addEventsOnDayOfWeek(event.dayOfWeek, [event]);
         });
 
-        console.log("New items: ", newItems); // Debugging statement to check items
         setItems(newItems);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -94,7 +80,6 @@ const CalendarScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Items:", items); // Debugging statement to check items
   }, [items]);
 
   const renderEmptyData = useCallback(() => {
@@ -109,7 +94,7 @@ const CalendarScreen = () => {
 
   const RenderItem = memo(({ item }) => {
     if (!item) {
-      return null; // Add this check to ensure item is not undefined
+      return null; 
     }
 
     return (
@@ -118,14 +103,13 @@ const CalendarScreen = () => {
           <Card.Content>
             <View
               style={{
-                flexDirection: "column", // Change to column for vertical layout
+                flexDirection: "column", 
                 justifyContent: "space-between",
               }}
             >
-              {/* Event name and level */}
+            
               <Text style={{ fontSize: 16, marginBottom: 4 }}>{item.name}</Text>
 
-              {/* Event time on a new row */}
               <Text
                 style={{ fontSize: 14, color: "#666" }}
               >{`Time: ${item.startTime} - ${item.endTime}`}</Text>

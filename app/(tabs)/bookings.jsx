@@ -1,7 +1,6 @@
-import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import GlobalAPI from "@/utils/GlobalAPI";
-import { useUser } from "@clerk/clerk-expo";
 import TrainerListItem from "@/components/TrainerListItem";
 import Colors from "@/constants/Colors";
 import { useIsFocused } from "@react-navigation/native";
@@ -52,8 +51,7 @@ export default function BookingScreen() {
       const day = dateParts[0].length === 1 ? `0${dateParts[0]}` : dateParts[0];
       let hour = parseInt(timeParts[0], 10);
       const minutes = timeParts[1];
-
-      // Adjust for AM/PM if necessary
+ 
       if (
         timeParts.length === 4 &&
         timeParts[3].toLowerCase() === "pm" &&

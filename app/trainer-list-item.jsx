@@ -23,13 +23,13 @@ export default function TrainerListItem({
   const getStatusBackgroundColor = (status) => {
     switch (status) {
       case "Completed":
-        return Colors.GREEN_LIGHT; // Ensure Colors.GREEN is defined in your Colors file
+        return Colors.GREEN_LIGHT;
       case "In Progress":
-        return Colors.ORANGE_LIGHT; // Ensure Colors.RED is defined in your Colors file
+        return Colors.ORANGE_LIGHT; 
       case "Booked":
         return Colors.PRIMARY_OPACITY;
       default:
-        return Colors.GRAY; // A default color for unknown statuses
+        return Colors.GRAY; 
     }
   };
 
@@ -50,7 +50,7 @@ export default function TrainerListItem({
             navigation.push("/trainer-detail", { trainer: trainer });
           }
         }}
-        disabled={isBookingPage} // This disables the touch if isBookingPage is true
+        disabled={isBookingPage} 
       >
         <View style={styles.imageAndBtncontainer}>
           <Image
@@ -64,11 +64,9 @@ export default function TrainerListItem({
           )}
         </View>
         <View style={styles.infoContainer}>
-          <View style={styles.subcontainer}>
-            {/* Name is always displayed */}
+          <View style={styles.subcontainer}> 
             <Text style={styles.name}>{trainer.name}</Text>
-
-            {/* Experience and contact are conditionally rendered based on showBookingDetails */}
+ 
             {!showBookingDetails && (
               <>
                 <Text style={styles.experience}>
@@ -122,10 +120,10 @@ export default function TrainerListItem({
 
 const styles = StyleSheet.create({
   toggleBookingContainer: {
-    alignSelf: "flex-end", // Adjust this if necessary
+    alignSelf: "flex-end", 
   },
   cancelButton: {
-    // Styling for the cancel button
+   
     backgroundColor: Colors.PRIMARY,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -149,21 +147,19 @@ const styles = StyleSheet.create({
     color: Colors.PRIMARY,
     alignSelf: "flex-start",
     marginTop: 10,
-    paddingVertical: 5, // Add vertical padding
-    paddingHorizontal: 10, // Add horizontal padding to make the background more visible
-    borderRadius: 8, // Adjust this value to increase or decrease the roundness of the corners
-    // Dynamic background color is applied inline as shown previously
+    paddingVertical: 5, 
+    paddingHorizontal: 10, 
+    borderRadius: 8,
   },
   dateContainer: {
     flexDirection: "row",
-    alignItems: "center", // This aligns items vertically within the container
-    marginTop: 10, // Adjust spacing as needed
+    alignItems: "center", 
+    marginTop: 10, 
   },
   dateText: {
-    marginLeft: 8, // Space between icon and text
-    fontFamily: "Lato-Regular", // Use your font
+    marginLeft: 8, 
     fontSize: 15,
-    color: Colors.GRAY, // Adjust color as needed
+    color: Colors.GRAY, 
   },
   container: {
     backgroundColor: Colors.WHITE,
@@ -210,6 +206,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingTop: 7,
     color: Colors.LIGHT_GRAY,
-  },
-  // Add or adjust other styles as needed
+  }
 });

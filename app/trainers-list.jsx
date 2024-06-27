@@ -1,14 +1,12 @@
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/core";
-import { Ionicons } from "@expo/vector-icons";
+import { useRoute } from "@react-navigation/core";
 import GlobalAPI from "@/utils/GlobalAPI";
 import TrainerListItem from "@/components/TrainerListItem";
 import Colors from "@/constants/Colors";
 import PageHeading from "@/components/PageHeading";
 export default function TrainersByStyleScreen() {
   const parameters = useRoute().params;
-  const navigation = useNavigation();
   const [trainerList, setTrainerList] = useState([]);
   useEffect(() => {
     parameters && getTrainersByStyle();
@@ -37,7 +35,7 @@ export default function TrainersByStyleScreen() {
           >
             No trainer found
           </Text>
-        } // This will show when trainerList is empty
+        } 
       />
     </View>
   );

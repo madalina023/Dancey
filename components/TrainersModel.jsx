@@ -15,7 +15,6 @@ import CalendarPicker from "react-native-calendar-picker";
 import Colors from "@/constants/Colors";
 import Heading from "./Heading";
 import GlobalAPI from "@/utils/GlobalAPI";
-import { useUser } from "@clerk/clerk-expo";
 import moment from "moment";
 import { client } from "@/utils/KindeConfig";
 export default function TrainersModel({
@@ -82,6 +81,7 @@ export default function TrainersModel({
 
       await GlobalAPI.createBooking(data);
       Alert.alert("Success", "Booking created successfully.");
+
       hideModal();
     } catch (error) {
       console.error(

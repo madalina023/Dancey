@@ -10,8 +10,6 @@ import {
 import Colors from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
 import GlobalAPI from "@/utils/GlobalAPI";
-import moment from "moment";
-import { useUser } from "@clerk/clerk-expo";
 import { client } from "@/utils/KindeConfig";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -32,9 +30,8 @@ const SubscriptionsActive = () => {
   const calculateExpiryDate = (dateString, timeString) => {
     const now = new Date();
     const expiryDate = new Date(dateString);
-    expiryDate.setMonth(expiryDate.getMonth() + 1); // Adds one month to the date
+    expiryDate.setMonth(expiryDate.getMonth() + 1); 
 
-    // Compare expiry date to current date
     if (expiryDate <= now) {
       return "Expired";
     } else {
@@ -46,10 +43,8 @@ const SubscriptionsActive = () => {
       if (user) {
         setLoading(true);
         try {
-          // Use primary email address to fetch active subscriptions
           const userEmail = user?.email
           const result = await GlobalAPI.getActiveSubscription(userEmail);
-          // Further processing to set the active subscriptions
           const subscriptionsWithDateTimeAndStatus =
             result.activeSubscriptions.flatMap((as) =>
               as.subscriptions.map((sub) => ({
@@ -68,7 +63,7 @@ const SubscriptionsActive = () => {
     };
 
     fetchActiveSubscriptions();
-  }, [user]); // The
+  }, [user]); 
   if (loading) {
     return <ActivityIndicator size="large" />;
   }
@@ -166,13 +161,13 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 18,
-    color: "#333",
+    color: Colors.GRAY,
     textAlign: "right",
   },
   dateTime: {
     fontSize: 17,
     color: Colors.DARK_GRAY,
-    textAlign: "left", // Center the expiry date under the name and price
+    textAlign: "left", 
     marginTop: 5,
   },
   centered: {
@@ -181,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   expiredText: {
-    color: Colors.RED, // Assuming you have a RED color defined, or use a string like '#FF0000'
+    color: Colors.RED, 
     fontSize: 17,
     fontWeight: "bold",
   },

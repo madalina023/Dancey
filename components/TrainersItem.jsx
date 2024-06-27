@@ -7,7 +7,7 @@ export default function TrainersItem({ trainer, onSelect }) {
 
   const handlePress = () => {
     if (onSelect) {
-      onSelect(); // This will close the modal
+      onSelect();
     }
     navigation.push("trainer-detail", {
       trainer: trainer,

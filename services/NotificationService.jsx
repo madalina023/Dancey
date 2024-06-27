@@ -15,6 +15,6 @@ export async function sendNotification(message) {
       title: "It is time to advance to the next level!",
       body: message,
     },
-    trigger: null, // Instant notification
+    trigger: null, 
   });
 }

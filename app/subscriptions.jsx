@@ -12,10 +12,7 @@ import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import GlobalAPI from "@/utils/GlobalAPI";
-import { useUser } from "@clerk/clerk-react";
 import { client } from "@/utils/KindeConfig";
-import { router } from "expo-router";
-import services from "@/utils/services";
 
 export default function Subscriptions() {
   const [user, setUser] = useState(null);
@@ -69,7 +66,6 @@ export default function Subscriptions() {
       const updateStatuses = async () => {
         try {
           await GlobalAPI.checkAndUpdateSubscriptionStatuses();
-          console.log("Subscription statuses updated.");
         } catch (error) {
           console.error("Failed to update subscription statuses:", error);
         }
@@ -152,30 +148,30 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
     marginHorizontal: 15,
-    justifyContent: "space-between", // This will help in positioning elements inside
-    flex: 1, // Make sure it's a flex container
+    justifyContent: "space-between", 
+    flex: 1, 
   },
 
   fullImage: {
-    width: "100%", // Take full width of the screen
-    height: 200, // Adjust the height as needed
+    width: "100%",
+    height: 200,
     borderRadius: 8,
     objectFit: "fill",
   },
   name: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 10, // Space between image and text
+    marginTop: 10,
   },
   priceRow: {
-    flexDirection: "row", // Lay out children in a row
-    justifyContent: "space-between", // Space between items
-    alignItems: "center", // Align items vertically
-    width: "100%", // Ensure the row takes up the full width of the card
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center", 
+    width: "100%", 
   },
   price: {
     fontSize: 16,
-    color: "#333",
+    color:Colors.GRAY,
   },
   touchableText: {
     fontSize: 16,

@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
-  Button,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import GlobalAPI from "@/utils/GlobalAPI";
@@ -75,7 +74,7 @@ export default function Styles() {
             <FlatList
               data={danceStyles}
               keyExtractor={(item) => item.id}
-              numColumns={3} // Set this to 2 for a two-column grid
+              numColumns={3} 
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   

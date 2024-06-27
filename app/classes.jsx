@@ -43,7 +43,6 @@ export default function Styles({ searchQuery = "" }) {
         >
           <Ionicons name="arrow-back" size={24} color={Colors.BLACK} />
         </TouchableOpacity>
-        {/* Replace Heading component with Text if you're not using a custom component */}
         <Text style={styles.headerTitle}>Classes</Text>
       </View>
       <FlatList
@@ -74,9 +73,9 @@ export default function Styles({ searchQuery = "" }) {
 
 const styles = StyleSheet.create({
   imageStylesContainer: {
-    flexDirection: "row", // Adjusted for vertical layout
+    flexDirection: "row",
     alignItems: "center",
-    margin: 10, // Adjust spacing as needed for vertical layout
+    margin: 10,
     backgroundColor: "white",
     borderRadius: 10,
     shadowColor: "#000",
@@ -90,10 +89,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   stylesContainer: {
-    width: 50, // Adjust size as needed
-    height: 50, // Adjust size as needed
+    width: 50, 
+    height: 50, 
     borderRadius: 25,
-    marginRight: 10, // Spacing between image and text
+    marginRight: 10, 
   },
   styleName: {
     fontFamily: "Lato-Regular",
@@ -104,14 +103,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   headerContainer: {
-    flexDirection: "row", // Aligns items horizontally
-    alignItems: "center", // Centers items vertically in the container
+    flexDirection: "row",
+    alignItems: "center", 
     marginBottom: 15,
-    marginLeft: 15, // Adds some space below the header
+    marginLeft: 15,
   },
   headerTitle: {
     fontSize: 20,
-    color: Colors.BLACK, // Adjust as needed
+    color: Colors.BLACK, 
     fontWeight: "bold",
   },
 });

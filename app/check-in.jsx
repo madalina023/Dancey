@@ -60,7 +60,7 @@ export default function CheckIn() {
               [
                 {
                   text: "OK",
-                  onPress: () => navigation.navigate("index"), // Navigate to Home screen on OK press
+                  onPress: () => navigation.navigate("index"), 
                 },
               ],
               { cancelable: false }
@@ -82,12 +82,11 @@ export default function CheckIn() {
 
   const handleBarCodeScanned = async ({ type, data }) => {
     setShowScanner(false);
-    console.log(`QR code with type ${type} and data ${data} has been scanned!`);
-    setIsLoading(true); // Show loading indicator
+    setIsLoading(true);  
 
     try {
       const response = await axios.post(
-        "http://192.168.1.133:5000/validate-qr",
+        "http://192.168.1.134:5000/validate-qr",
         { qrData: data },
         { timeout: 30000 }
       );
@@ -107,7 +106,7 @@ export default function CheckIn() {
         alert("There was an error validating the QR code.");
       }
     } finally {
-      setIsLoading(false); // Hide loading indicator
+      setIsLoading(false);  
     }
   };
 
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    width: "100%", // Ensures the content uses full width of its parent
+    width: "100%", 
   },
   img: {
     width: 300,

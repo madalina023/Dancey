@@ -8,6 +8,7 @@ import Colors from "@/constants/Colors";
 const Recommendations = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [user, setUser] = useState(null);
+  const [userStyles, setUserStyles] = useState(new Set());
 
   useEffect(() => {
     getUserData();
@@ -16,7 +17,6 @@ const Recommendations = () => {
   const getUserData = async () => {
     try {
       const user = await client.getUserDetails();
-      console.log("Fetched user data:", user);
       setUser(user);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -28,9 +28,9 @@ const Recommendations = () => {
       try {
         if (user) {
           const checkIns = await GlobalAPI.getUserCheckIns(user.email);
-          console.log("Fetched check-ins:", checkIns);
-          const processedRecommendations = processCheckIns(checkIns);
-          setRecommendations(processedRecommendations);
+          const { recommendations, stylesSet } = processCheckIns(checkIns);
+          setUserStyles(stylesSet);
+          setRecommendations(recommendations);
         }
       } catch (error) {
         console.error("Error fetching check-ins:", error);
@@ -44,15 +44,16 @@ const Recommendations = () => {
 
   const processCheckIns = (checkIns) => {
     const checkInCounts = {};
+    const stylesSet = new Set();
 
-    // Count check-ins by dance style and level
     checkIns.forEach((checkIn) => {
       const danceStyles = checkIn.calendar.danceStyles;
       const level = checkIn.calendar.level;
 
       if (danceStyles && level) {
         danceStyles.forEach((styleObj) => {
-          const style = styleObj.name; // Accessing the name property of the style object
+          const style = styleObj.name;
+          stylesSet.add(style);  
           if (!checkInCounts[style]) {
             checkInCounts[style] = {
               beginner: 0,
@@ -65,62 +66,87 @@ const Recommendations = () => {
       }
     });
 
-    console.log("Check-in counts:", checkInCounts);
-
-    // Determine recommendations based on check-in counts
-    const recommendations = Object.keys(checkInCounts).map((style) => {
+    const recommendations = [];
+    Object.keys(checkInCounts).forEach((style) => {
       const levels = checkInCounts[style];
-      if (levels.beginner >= 2) {
-        return `You can advance to the intermediate level in ${style}.`;
+      if (levels.beginner >= 5) {
+        recommendations.push(
+          `You can advance to the intermediate level in ${style}.`
+        );
+      } else if (levels.intermediate >= 5) {
+        recommendations.push(
+          `You can advance to the advanced level in ${style}.`
+        );
+      } else if (levels.advanced >= 5) {
+        recommendations.push(getAdvancedRecommendations(style, stylesSet));
+      } else {
+        recommendations.push(`Keep going! You are doing great in ${style}.`);
       }
-      if (levels.intermediate >= 5) {
-        return `You can advance to the advanced level in ${style}.`;
-      }
-      if (levels.advanced >= 5) {
-        return `You can try a new style, you have mastered the advanced level in ${style}.`;
-      }
-      return `Keep going! You are doing great in ${style}.`;
     });
 
-    console.log("Generated recommendations:", recommendations);
+    return { recommendations, stylesSet };
+  };
 
-    return recommendations;
+  const getAdvancedRecommendations = (currentStyle, stylesSet) => {
+    const recommendationsMap = {
+      Bachata: ["Salsa", "Kizomba"],
+      Salsa: ["Cha-cha", "Kizomba"],
+      Kizomba: ["Waltz", "Tango", "Zouk", "Bachata"],
+      Waltz: ["Tango"],
+      Tango: ["Kizomba, Waltz"],
+      Zouk: ["Waltz"],
+    };
+
+    const recommendedStyles = recommendationsMap[currentStyle] || [];
+
+    const filteredStyles = recommendedStyles.filter(
+      (style) => !stylesSet.has(style)
+    );
+
+    if (filteredStyles.length > 0) {
+      const stylesToTry = filteredStyles.join(", ");
+      return `You have mastered the advanced level in ${currentStyle}. You can try ${stylesToTry}.`;
+    } else {
+      return `You have mastered the advanced level in ${currentStyle}. Continue with the styles you are currently practicing!`;
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
-          <PageHeading title="Recommendations" />
-          <View style={styles.recs}>
-      {recommendations.length > 0 ? (
-        recommendations.map((rec, index) => (
-          <View key={index} style={styles.recommendationCard}>
-            <Text style={styles.recommendationText}>{rec}</Text>
-          </View>
-        ))
-      ) : (
-        <Text style={styles.noRecommendations}>
-          No recommendations available
-        </Text>
-      )}</View>
+      <PageHeading title="Recommendations" />
+      <View style={styles.recs}>
+        {recommendations.length > 0 ? (
+          recommendations.map((rec, index) => (
+            <View key={index} style={styles.recommendationCard}>
+              <Text style={styles.recommendationText}>{rec}</Text>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.noRecommendations}>
+            No recommendations available
+          </Text>
+        )}
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {marginTop:30,
+  container: {
+    marginTop: 30,
     flex: 1,
-    padding: 16
-    },
-    recs: {
-        marginTop:20
-    },
+    padding: 16,
+  },
+  recs: {
+    marginTop: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
   },
-    recommendationCard: {
-    marginTop:5,
+  recommendationCard: {
+    marginTop: 5,
     backgroundColor: Colors.PRIMARY_OPACITY2,
     borderRadius: 8,
     padding: 16,
