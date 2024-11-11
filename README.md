@@ -16,6 +16,7 @@ This mobile app for dance school management is designed to streamline the admini
 **Other tools:** GitHub.
 
 
+
 **As main functionalities, this app includes:**
 
 **User management** - registration, login, profile;
