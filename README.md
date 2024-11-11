@@ -1,4 +1,5 @@
 **Mobile App for Dance School Management** 
+
 This mobile app for dance school management is designed to streamline the administration and operation of dance schools, providing efficient tools for instructors, students, and administrators.
 
 
@@ -21,5 +22,6 @@ This mobile app for dance school management is designed to streamline the admini
 **Notifications and recommendations** - based on the user's activity, they can receive personalized recommendations on which level or style to advance to;
 **Course and progress tracking** - users can see the history of all the courses they have attended;
 **AI integration** - the AI chat integrated in the app, provides assistance and information about dance-related topics.
+
 
 The application represents a significant step towards digitizing and modernizing the management of dance schools, offering a comprehensive solution to improve efficiency and user experience.
